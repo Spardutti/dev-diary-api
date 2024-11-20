@@ -1,0 +1,17 @@
+meta {
+  name: Delete
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{url}}/projects/1/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Project 1"
+  }
+}

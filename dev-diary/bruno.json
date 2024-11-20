@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "dev-diary",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
