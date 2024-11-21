@@ -1,5 +1,6 @@
 from django.utils.crypto import get_random_string
 from ..models import User
+from rest_framework_simplejwt.tokens import RefreshToken
 
 def get_or_create_guest_user():
         """
@@ -11,7 +12,7 @@ def get_or_create_guest_user():
         # Create the guest user in the database
         guest_user, created = User.objects.get_or_create(
             email=guest_email,
-            defaults={"is_guest": True}
+            is_guest=True,
         )
 
         # If a new user was created, return it; otherwise, retry with a new email

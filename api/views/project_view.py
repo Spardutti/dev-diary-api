@@ -5,21 +5,17 @@ from ..serializers import ProjectSerializer
 from ..models import Project
 from ..utils.custom_response import CustomResponse
 from ..utils.error_response import ErrorResponse
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from ..utils.guest_account import get_or_create_guest_user
 
 class ProjectView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk=None):
         try:
                 
             if pk is not None:
                 project = Project.objects.get(pk=pk)
-
-                ownership_error = check_is_owner(project, request)
-                if ownership_error:
-                    return ownership_error
                 
                 serializer = ProjectSerializer(project)
                 return CustomResponse(serializer.data, status=status.HTTP_200_OK)
@@ -34,10 +30,9 @@ class ProjectView(APIView):
     
     def post(self, request):
         try:
-            user = request.user if request.user.is_authenticated else get_or_create_guest_user()
             serializer = ProjectSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save(owner=user)
+                serializer.save(owner=request.user)
                 return CustomResponse(serializer.data, status=status.HTTP_201_CREATED)
 
             return ErrorResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -51,10 +46,6 @@ class ProjectView(APIView):
                 return ErrorResponse("Project ID is required", status=status.HTTP_400_BAD_REQUEST)
             
             project = Project.objects.get(pk=pk)
-
-            ownership_error = check_is_owner(project, request)
-            if ownership_error:
-                return ownership_error
 
             project.delete()
             

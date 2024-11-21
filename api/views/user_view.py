@@ -7,6 +7,14 @@ from ..utils.custom_response import CustomResponse
 from ..utils.error_response import ErrorResponse
 
 class UserView(APIView):
+    def get(self, request):
+        try:
+            serializer = UserSerializer(request.user)
+            return CustomResponse(serializer.data, status=status.HTTP_200_OK)
+        
+        except ValueError:
+            return ErrorResponse("Invalid data", status=status.HTTP_400_BAD_REQUEST)
+    
     def post(self, request):
         try:
             serializer = UserSerializer(data=request.data)
@@ -18,3 +26,4 @@ class UserView(APIView):
         
         except ValueError:
             return ErrorResponse("Invalid data", status=status.HTTP_400_BAD_REQUEST)
+        

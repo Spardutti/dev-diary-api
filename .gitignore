@@ -1,0 +1,75 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django-related
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+db.sqlite3
+*.env
+.env.*
+
+# Ignore local settings
+settings_local.py
+
+# Media and static files
+/media/
+/staticfiles/
+
+# Migrations (optional, sometimes you might want to track migrations)
+*/migrations/__pycache__/
+*/migrations/*.pyc
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+# Environment files
+.env
+*.env
+
+# Virtual environments
+venv/
+env/
+venv.bak/
+
+# macOS specific files
+.DS_Store
+
+# Node.js dependencies (if you use npm/yarn for frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+
+# Test outputs
+*.cover
+*.log
+*.testlog
+junit*.xml
+
+# Build files
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Other IDE-specific files
+*.swp
+*~
+.idea/
