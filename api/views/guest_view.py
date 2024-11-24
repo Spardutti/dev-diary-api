@@ -7,17 +7,7 @@ from ..utils.error_response import ErrorResponse
 from ..utils.guest_account import get_or_create_guest_user
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
-
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
-from rest_framework import status
-
-from ..serializers import UserSerializer
-from ..utils.custom_response import CustomResponse
-from ..utils.error_response import ErrorResponse
-from ..utils.guest_account import get_or_create_guest_user
-from rest_framework_simplejwt.tokens import RefreshToken
-
+from ..models import Project
 
 class GuestView(APIView):
     permission_classes = [AllowAny]
@@ -29,13 +19,20 @@ class GuestView(APIView):
             if user is None:
                 return ErrorResponse("Error creating guest user", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
+            guest_project = Project.objects.create(name="Guest Project", owner=user)
+            guest_project.save()
+
+            user.last_project = guest_project # type: ignore
+
             serializer = UserSerializer(user)
 
             refresh = RefreshToken.for_user(user)
+
             token_data = {
                 "refresh": str(refresh),
                 "access": str(refresh.access_token)  # type: ignore
             }
+
 
             return CustomResponse(
                 {"user": serializer.data, "token": token_data},

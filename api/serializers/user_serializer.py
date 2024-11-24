@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import User
+from ..models import User, Project
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)  # Ensure the password is write-only
@@ -17,5 +17,10 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password')
         user = User.objects.create(**validated_data)
         user.set_password(password)  # Hash the password
+
+        project = Project.objects.create(name="Default Project", owner=user)
+
+        user.last_project =project
+        
         user.save()
         return user

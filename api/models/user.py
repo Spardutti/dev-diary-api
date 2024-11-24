@@ -34,7 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, max_length=255)
     is_staff = models.BooleanField(default=False)  # Staff rights
     date_joined = models.DateTimeField(auto_now_add=True)
-    last_project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True, blank=True, related_name='last_project')
+    last_project = models.ForeignKey('Project', on_delete=models.PROTECT, related_name='last_project')
     is_guest = models.BooleanField(default=False)
 
     objects = UserManager()
