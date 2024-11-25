@@ -32,9 +32,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, max_length=255)
-    is_staff = models.BooleanField(default=False)  # Staff rights
+    is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
-    last_project = models.ForeignKey('Project', on_delete=models.PROTECT, related_name='last_project')
+    last_visited_project = models.ForeignKey('Project', null=True, blank=True, on_delete=models.SET_NULL, related_name='users_last_visited')
     is_guest = models.BooleanField(default=False)
 
     objects = UserManager()
@@ -43,11 +43,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-    
-    @classmethod
-    def create_guest_user(cls):
-        """Creates and returns a new temporary guest user."""
-        return cls.objects.create(
-            email=None,  # No email for guest accounts
-            is_guest=True
-        )

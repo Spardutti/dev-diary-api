@@ -1,13 +1,12 @@
 from rest_framework import serializers
-from ..models import User, Project
+from ..models import User
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)  # Ensure the password is write-only
-    last_project = serializers.PrimaryKeyRelatedField(read_only=True)  # Make last_project read-only
+    password = serializers.CharField(write_only=True)  
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'password', 'last_project']
+        fields = ['id', 'email', 'password', 'last_visited_project']
 
 
     def create(self, validated_data):
@@ -17,10 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password')
         user = User.objects.create(**validated_data)
         user.set_password(password)  # Hash the password
-
-        project = Project.objects.create(name="Default Project", owner=user)
-
-        user.last_project =project
         
         user.save()
         return user
