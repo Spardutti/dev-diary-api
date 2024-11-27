@@ -41,16 +41,35 @@ class ProjectView(APIView):
         except ValueError:
             return ErrorResponse("Invalid data", status=status.HTTP_400_BAD_REQUEST)
         
+    def patch(self, request, pk=None):
+        try:
+            if pk is None:
+                return ErrorResponse("Project ID is required", status=status.HTTP_400_BAD_REQUEST)
+
+            project = Project.objects.get(pk=pk)
+            serializer = ProjectSerializer(project, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return CustomResponse(serializer.data, status=status.HTTP_200_OK)
+
+            return ErrorResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Project.DoesNotExist:
+            return ErrorResponse("Project not found", status=status.HTTP_404_NOT_FOUND)
+        
     def delete(self, request, pk=None):
         try:
             if pk is None:
                 return ErrorResponse("Project ID is required", status=status.HTTP_400_BAD_REQUEST)
             
             project = Project.objects.get(pk=pk)
+            user = project.owner
 
             project.delete()
+
+            redirect_to = Project.objects.filter(owner=user).first()
             
-            return CustomResponse("Project deleted successfully", status=status.HTTP_204_NO_CONTENT)
+            return CustomResponse({"redirect_to": redirect_to.id }, status=status.HTTP_200_OK)
         
         except Project.DoesNotExist:
             return ErrorResponse("Project not found", status=status.HTTP_404_NOT_FOUND)

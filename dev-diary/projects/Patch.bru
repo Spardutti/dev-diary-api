@@ -1,0 +1,17 @@
+meta {
+  name: Patch
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{url}}/projects/52/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "33"
+  }
+}

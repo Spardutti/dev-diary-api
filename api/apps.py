@@ -7,4 +7,4 @@ class ApiConfig(AppConfig):
 
     def ready(self):
         # Import the signals when the app is ready
-        import api.signals.user_signal
+        import api.signals.user_signal, api.signals.project_signal
