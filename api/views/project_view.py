@@ -1,12 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework import status
-from ..utils.ownership import check_is_owner
 from ..serializers import ProjectSerializer
-from ..models import Project
+from ..models import Project, User
 from ..utils.custom_response import CustomResponse
 from ..utils.error_response import ErrorResponse
 from rest_framework.permissions import IsAuthenticated
-from ..utils.guest_account import get_or_create_guest_user
 
 class ProjectView(APIView):
     permission_classes = [IsAuthenticated]
@@ -16,6 +14,9 @@ class ProjectView(APIView):
                 
             if pk is not None:
                 project = Project.objects.get(pk=pk)
+
+                request.last_visited_project = project
+                request.user.save(update_fields=['last_visited_project'])
                 
                 serializer = ProjectSerializer(project)
                 return CustomResponse(serializer.data, status=status.HTTP_200_OK)
