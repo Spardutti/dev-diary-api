@@ -1,0 +1,19 @@
+meta {
+  name: Delete
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{url}}/daily-notes/5/
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "project": 52,
+    "note": "<p>Today</p>",
+    "date": "2024-11-28"
+  }
+}

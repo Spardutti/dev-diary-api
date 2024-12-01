@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProjectView, UserView, GuestView
+from .views import ProjectView, UserView, GuestView, DailyNoteView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -13,5 +13,7 @@ urlpatterns = [
     path('guests/', GuestView.as_view(), name='guest-list'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),   
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),   
+    path('daily-notes/', DailyNoteView.as_view(), name='daily-note-list'),
+    path('daily-notes/<int:pk>/', DailyNoteView.as_view(), name='daily-note-detail')
 
 ]
