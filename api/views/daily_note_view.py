@@ -6,6 +6,9 @@ from ..utils.custom_response import CustomResponse
 from ..utils.error_response import ErrorResponse
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, date
+from django.db.models.functions import TruncMonth
+from django.db.models import Count
+from collections import defaultdict
 
 class DailyNoteView(APIView):
     permission_classes = [IsAuthenticated]
@@ -26,10 +29,11 @@ class DailyNoteView(APIView):
                 else:
                     return self.get_daily_note_by_date(project_id, date_str)
             
-            daily_notes = DailyNote.objects.filter(project=project_id)
-            serializer = DailyNoteSerializer(daily_notes, many=True)
+            daily_notes = DailyNote.objects.filter(project=project_id).annotate(month=TruncMonth('date')).order_by('-date')
+
+            grouped_notes_serialized = self.group_by_month(daily_notes)
         
-            return CustomResponse(serializer.data, status=status.HTTP_200_OK)
+            return CustomResponse(grouped_notes_serialized, status=status.HTTP_200_OK)
         
         except DailyNote.DoesNotExist:
             return ErrorResponse("Daily notes not found", status=status.HTTP_404_NOT_FOUND)
@@ -93,9 +97,26 @@ class DailyNoteView(APIView):
         Get today's note for a project, or create it if it doesn't exist.
         """
         today = date.today()
-        daily_note= DailyNote.objects.get_or_create(
+        daily_note, created = DailyNote.objects.get_or_create(
             project_id=project_id,
             date=today,
         )
         serializer = DailyNoteSerializer(daily_note)
         return CustomResponse(serializer.data, status=status.HTTP_200_OK)
+    
+    def group_by_month(self, daily_notes):
+        """
+        Group notes by month in descending order (newest month first).
+        """
+        # Create a grouped structure
+        grouped_notes = defaultdict(list)
+        for note in daily_notes:
+            key = note.date.strftime('%Y-%m')  # Group by Year-Month
+            grouped_notes[key].append(note)
+
+        # Sort months in descending order and serialize grouped notes
+        sorted_months = sorted(grouped_notes.keys(), reverse=True)  # Sort months in descending order
+        return {
+            month: DailyNoteSerializer(grouped_notes[month], many=True).data
+            for month in sorted_months
+        }
