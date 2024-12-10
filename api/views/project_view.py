@@ -13,7 +13,7 @@ class ProjectView(APIView):
         try:
                 
             if pk is not None:
-                project = Project.objects.get(pk=pk)
+                project = Project.objects.get(pk=pk, owner=request.user)
 
                 request.last_visited_project = project
                 request.user.save(update_fields=['last_visited_project'])
@@ -69,7 +69,7 @@ class ProjectView(APIView):
 
             redirect_to = Project.objects.filter(owner=user).first()
             
-            return CustomResponse({"redirect_to": redirect_to.id }, status=status.HTTP_200_OK)
+            return CustomResponse({"redirect_to": redirect_to.id }, status=status.HTTP_200_OK) # type: ignore
         
         except Project.DoesNotExist:
             return ErrorResponse("Project not found", status=status.HTTP_404_NOT_FOUND)
