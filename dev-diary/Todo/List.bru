@@ -1,0 +1,19 @@
+meta {
+  name: List
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/todos/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "project": 52,
+    "title": "nope",
+    "date": "2024-10-12"
+  }
+}
