@@ -5,3 +5,6 @@ class Todo(models.Model):
     completed = models.BooleanField(default=False)
     date = models.DateField()
     project = models.ForeignKey('Project', on_delete=models.CASCADE)
+
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)

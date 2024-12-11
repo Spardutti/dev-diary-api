@@ -5,7 +5,15 @@ meta {
 }
 
 post {
-  url: /todo/
-  body: none
-  auth: none
+  url: {{url}}/todos/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "project": 62,
+    "title": "xet",
+    "date": "2024-10-12"
+  }
 }

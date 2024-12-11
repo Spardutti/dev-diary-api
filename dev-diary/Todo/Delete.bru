@@ -1,17 +1,13 @@
 meta {
-  name: List
+  name: Delete
   type: http
-  seq: 2
+  seq: 4
 }
 
 get {
-  url: {{url}}/todos/?project_id=65
+  url: {{url}}/todos/13
   body: json
   auth: inherit
-}
-
-query {
-  project_id: 65
 }
 
 body:json {
