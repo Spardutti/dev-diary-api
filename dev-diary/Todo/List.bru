@@ -5,13 +5,14 @@ meta {
 }
 
 get {
-  url: {{url}}/todos/?project_id=65
+  url: {{url}}/todos/?project_id=62&ordering=title
   body: json
   auth: inherit
 }
 
 query {
-  project_id: 65
+  project_id: 62
+  ordering: title
 }
 
 body:json {

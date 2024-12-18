@@ -5,6 +5,7 @@ from rest_framework import generics
 from django.shortcuts import get_object_or_404
 from ..permissions import IsProjectOwner
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.filters import OrderingFilter
 
 
 class TodoView(generics.ListCreateAPIView):
@@ -17,6 +18,10 @@ class TodoView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     filterset_fields = ['project', 'title', 'completed']
+
+    ordering_fields = ['title', 'created_at', 'updated_at', 'completed'] 
+    
+    ordering = ['-created_at'] 
 
     def get_queryset(self):
         """
