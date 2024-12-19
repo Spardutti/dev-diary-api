@@ -16,6 +16,11 @@ db.sqlite3
 # Ignore local settings
 settings_local.py
 
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+
 # Media and static files
 /media/
 /staticfiles/
