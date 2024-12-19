@@ -4,11 +4,10 @@ from ..serializers import DailyNoteSerializer
 from ..models import DailyNote
 from ..utils.custom_response import CustomResponse
 from ..utils.error_response import ErrorResponse
+from ..utils.group_by_month import group_by_month
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, date
 from django.db.models.functions import TruncMonth
-from django.db.models import Count
-from collections import defaultdict
 
 class DailyNoteView(APIView):
     permission_classes = [IsAuthenticated]
@@ -31,7 +30,12 @@ class DailyNoteView(APIView):
             
             daily_notes = DailyNote.objects.filter(project=project_id).annotate(month=TruncMonth('date')).order_by('-date')
 
-            grouped_notes_serialized = self.group_by_month(daily_notes)
+            sorted_months, grouped_notes = group_by_month(daily_notes)
+
+            grouped_notes_serialized = {
+                month: DailyNoteSerializer(grouped_notes[month], many=True).data
+                for month in sorted_months 
+                }
         
             return CustomResponse(grouped_notes_serialized, status=status.HTTP_200_OK)
         
@@ -103,20 +107,3 @@ class DailyNoteView(APIView):
         )
         serializer = DailyNoteSerializer(daily_note)
         return CustomResponse(serializer.data, status=status.HTTP_200_OK)
-    
-    def group_by_month(self, daily_notes):
-        """
-        Group notes by month in descending order (newest month first).
-        """
-        # Create a grouped structure
-        grouped_notes = defaultdict(list)
-        for note in daily_notes:
-            key = note.date.strftime('%Y-%m')  # Group by Year-Month
-            grouped_notes[key].append(note)
-
-        # Sort months in descending order and serialize grouped notes
-        sorted_months = sorted(grouped_notes.keys(), reverse=True)  # Sort months in descending order
-        return {
-            month: DailyNoteSerializer(grouped_notes[month], many=True).data
-            for month in sorted_months
-        }
