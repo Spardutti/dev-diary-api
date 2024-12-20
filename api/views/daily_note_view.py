@@ -1,109 +1,97 @@
-from rest_framework.views import APIView
-from rest_framework import status
 from ..serializers import DailyNoteSerializer
 from ..models import DailyNote
-from ..utils.custom_response import CustomResponse
-from ..utils.error_response import ErrorResponse
 from ..utils.group_by_month import group_by_month
 from rest_framework.permissions import IsAuthenticated
-from datetime import datetime, date
 from django.db.models.functions import TruncMonth
+from rest_framework import generics
+from rest_framework.exceptions import ValidationError
+from django.db.models.functions import TruncMonth
+from rest_framework.exceptions import ValidationError
 
-class DailyNoteView(APIView):
+class DailyNoteView(generics.ListCreateAPIView):
+    queryset = DailyNote.objects.all()
+    serializer_class = DailyNoteSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk=None):
-        try:
-            if pk is not None:
-                daily_note = DailyNote.objects.get(pk=pk)
-                serializer = DailyNoteSerializer(daily_note)
-                return CustomResponse(serializer.data, status=status.HTTP_200_OK)
-            
-            date_str = request.query_params.get('date', None)
-            project_id = request.query_params.get('project_id', None)
-            
-            if date_str and project_id:
-                if date_str == "today":
-                    return self.get_or_create_today_note(project_id)
-                else:
-                    return self.get_daily_note_by_date(project_id, date_str)
-            
-            daily_notes = DailyNote.objects.filter(project=project_id).annotate(month=TruncMonth('date')).order_by('-date')
+    filterset_fields = ['project', 'date']
 
-            sorted_months, grouped_notes = group_by_month(daily_notes)
+    ordering_fields = ['created_at', 'updated_at']
+    ordering = ['-created_at'] 
 
-            grouped_notes_serialized = {
-                month: DailyNoteSerializer(grouped_notes[month], many=True).data
-                for month in sorted_months 
-                }
-        
-            return CustomResponse(grouped_notes_serialized, status=status.HTTP_200_OK)
-        
-        except DailyNote.DoesNotExist:
-            return ErrorResponse("Daily notes not found", status=status.HTTP_404_NOT_FOUND)
-        
-    def post(self, request):
-        try:
-            serializer = DailyNoteSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return CustomResponse(serializer.data, status=status.HTTP_201_CREATED)
+    def get_queryset(self):
+        """
+        Filter daily notes based on the project passed in the query params.
+        Ensure the project belongs to the authenticated user.
+        """
+        project_id = self.request.query_params.get("project_id")  # type: ignore
 
-            return ErrorResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not project_id:
+            raise ValidationError({"project_id": "This query parameter is required."})
 
-        except ValueError:
-            return ErrorResponse("Invalid data", status=status.HTTP_400_BAD_REQUEST)
-        
-    def patch(self, request, pk=None):
-        try:
-            if pk is None:
-                return ErrorResponse("Daily note ID is required", status=status.HTTP_400_BAD_REQUEST)
-            
-            daily_note = DailyNote.objects.get(pk=pk)
-            serializer = DailyNoteSerializer(daily_note, data=request.data, partial=True)
+        queryset = DailyNote.objects.filter(project=project_id)
 
-            if serializer.is_valid():
-                serializer.save()
-                return CustomResponse(serializer.data, status=status.HTTP_200_OK)
-            
-            return ErrorResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        except DailyNote.DoesNotExist:
-            return ErrorResponse("Daily note not found", status=status.HTTP_404_NOT_FOUND)
-        
-    def delete(self, request, pk=None):
-        try:
-            if pk is None:
-                return ErrorResponse("Daily note ID is required", status=status.HTTP_400_BAD_REQUEST)
-
-            daily_note = DailyNote.objects.get(pk=pk)
-            daily_note.delete()
-
-            return CustomResponse({"message": "Daily note deleted successfully"}, status=status.HTTP_200_OK)
-
-        except DailyNote.DoesNotExist:
-            return ErrorResponse("Daily note not found", status=status.HTTP_404_NOT_FOUND)
-        
+        return queryset
     
-    def get_daily_note_by_date(self, project_id, date_str):
-        try:
-            date = datetime.strptime(date_str, '%Y-%m-%d').date()
-            daily_notes = DailyNote.objects.get(project=project_id, date=date)
-            serializer = DailyNoteSerializer(daily_notes)
+    def list(self, request, *args, **kwargs):
+        """
+        Override the list method to group daily notes by month if no specific date is provided.
+        """
+        queryset = self.get_queryset().annotate(month=TruncMonth('date')).order_by('-date')
 
-            return CustomResponse(serializer.data, status=status.HTTP_200_OK)
+        # Apply pagination to the queryset
+        paginated_queryset = self.paginate_queryset(queryset)
+        if paginated_queryset is not None:
+            # Group only the paginated results (now a list, not a queryset)
+            sorted_months, grouped_data = group_by_month(paginated_queryset)
 
-        except DailyNote.DoesNotExist:
-            return ErrorResponse("Daily notes not found", status=status.HTTP_404_NOT_FOUND)
+            # Serialize grouped notes
+            grouped_serialized = {
+                month: DailyNoteSerializer(grouped_data[month], many=True).data
+                for month in sorted_months
+            }
+
+            # Return paginated response
+            return self.get_paginated_response(grouped_serialized)
+    
         
-    def get_or_create_today_note(self, project_id):
-        """
-        Get today's note for a project, or create it if it doesn't exist.
-        """
-        today = date.today()
-        daily_note, created = DailyNote.objects.get_or_create(
-            project_id=project_id,
-            date=today,
-        )
-        serializer = DailyNoteSerializer(daily_note)
-        return CustomResponse(serializer.data, status=status.HTTP_200_OK)
+    # def post(self, request):
+    #     try:
+    #         serializer = DailyNoteSerializer(data=request.data)
+    #         if serializer.is_valid():
+    #             serializer.save()
+    #             return CustomResponse(serializer.data, status=status.HTTP_201_CREATED)
+
+    #         return ErrorResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    #     except ValueError:
+    #         return ErrorResponse("Invalid data", status=status.HTTP_400_BAD_REQUEST)
+        
+    # def patch(self, request, pk=None):
+    #     try:
+    #         if pk is None:
+    #             return ErrorResponse("Daily note ID is required", status=status.HTTP_400_BAD_REQUEST)
+            
+    #         daily_note = DailyNote.objects.get(pk=pk)
+    #         serializer = DailyNoteSerializer(daily_note, data=request.data, partial=True)
+
+    #         if serializer.is_valid():
+    #             serializer.save()
+    #             return CustomResponse(serializer.data, status=status.HTTP_200_OK)
+            
+    #         return ErrorResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    #     except DailyNote.DoesNotExist:
+    #         return ErrorResponse("Daily note not found", status=status.HTTP_404_NOT_FOUND)
+        
+    # def delete(self, request, pk=None):
+    #     try:
+    #         if pk is None:
+    #             return ErrorResponse("Daily note ID is required", status=status.HTTP_400_BAD_REQUEST)
+
+    #         daily_note = DailyNote.objects.get(pk=pk)
+    #         daily_note.delete()
+
+    #         return CustomResponse({"message": "Daily note deleted successfully"}, status=status.HTTP_200_OK)
+
+    #     except DailyNote.DoesNotExist:
+    #         return ErrorResponse("Daily note not found", status=status.HTTP_404_NOT_FOUND)
