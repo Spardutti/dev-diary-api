@@ -7,11 +7,12 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from django.db.models.functions import TruncMonth
 from rest_framework.exceptions import ValidationError
+from ..permissions.is_project_owner import IsProjectOwner
 
 class DailyNoteView(generics.ListCreateAPIView):
     queryset = DailyNote.objects.all()
     serializer_class = DailyNoteSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsProjectOwner]
 
     filterset_fields = ['project', 'date']
 
@@ -52,46 +53,8 @@ class DailyNoteView(generics.ListCreateAPIView):
 
             # Return paginated response
             return self.get_paginated_response(grouped_serialized)
-    
-        
-    # def post(self, request):
-    #     try:
-    #         serializer = DailyNoteSerializer(data=request.data)
-    #         if serializer.is_valid():
-    #             serializer.save()
-    #             return CustomResponse(serializer.data, status=status.HTTP_201_CREATED)
 
-    #         return ErrorResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    #     except ValueError:
-    #         return ErrorResponse("Invalid data", status=status.HTTP_400_BAD_REQUEST)
-        
-    # def patch(self, request, pk=None):
-    #     try:
-    #         if pk is None:
-    #             return ErrorResponse("Daily note ID is required", status=status.HTTP_400_BAD_REQUEST)
-            
-    #         daily_note = DailyNote.objects.get(pk=pk)
-    #         serializer = DailyNoteSerializer(daily_note, data=request.data, partial=True)
-
-    #         if serializer.is_valid():
-    #             serializer.save()
-    #             return CustomResponse(serializer.data, status=status.HTTP_200_OK)
-            
-    #         return ErrorResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-    #     except DailyNote.DoesNotExist:
-    #         return ErrorResponse("Daily note not found", status=status.HTTP_404_NOT_FOUND)
-        
-    # def delete(self, request, pk=None):
-    #     try:
-    #         if pk is None:
-    #             return ErrorResponse("Daily note ID is required", status=status.HTTP_400_BAD_REQUEST)
-
-    #         daily_note = DailyNote.objects.get(pk=pk)
-    #         daily_note.delete()
-
-    #         return CustomResponse({"message": "Daily note deleted successfully"}, status=status.HTTP_200_OK)
-
-    #     except DailyNote.DoesNotExist:
-    #         return ErrorResponse("Daily note not found", status=status.HTTP_404_NOT_FOUND)
+class DailyNoteDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = DailyNote.objects.all()
+    serializer_class = DailyNoteSerializer
+    permission_classes = [IsAuthenticated, IsProjectOwner]

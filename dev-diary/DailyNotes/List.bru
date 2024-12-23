@@ -1,18 +1,18 @@
 meta {
-  name: Get
+  name: List
   type: http
-  seq: 2
+  seq: 5
 }
 
 get {
-  url: {{url}}/daily-notes/?project_id=52
+  url: {{url}}/daily-notes/11/
   body: json
   auth: inherit
 }
 
 query {
-  project_id: 52
-  ~date: 2024-12-20
+  ~project_id: 58
+  ~date: 2024-12-23
   ~date: today
 }
 

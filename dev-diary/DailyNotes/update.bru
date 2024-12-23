@@ -1,24 +1,23 @@
 meta {
-  name: Get
+  name: update
   type: http
-  seq: 2
+  seq: 4
 }
 
-get {
-  url: {{url}}/daily-notes/?project_id=52
+patch {
+  url: {{url}}/daily-notes/58/?project_id=52&date=2024-12-23
   body: json
   auth: inherit
 }
 
 query {
   project_id: 52
-  ~date: 2024-12-20
-  ~date: today
+  date: 2024-12-23
 }
 
 body:json {
   {
-    "project": 3,
+    "project": 3333,
     "note": "<p>Today</p>",
     "date": "2024-11-28"
   }
