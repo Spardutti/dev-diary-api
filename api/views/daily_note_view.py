@@ -6,8 +6,9 @@ from django.db.models.functions import TruncMonth
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from django.db.models.functions import TruncMonth
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotFound
 from ..permissions.is_project_owner import IsProjectOwner
+from ..utils.custom_response import CustomResponse
 
 class DailyNoteView(generics.ListCreateAPIView):
     queryset = DailyNote.objects.all()
@@ -19,17 +20,44 @@ class DailyNoteView(generics.ListCreateAPIView):
     ordering_fields = ['created_at', 'updated_at']
     ordering = ['-created_at'] 
 
+    def get(self, request, *args, **kwargs):
+        """
+        If a query parameter is provided, ensure that exactly one object matches.
+        """
+        date = self.request.query_params.get('date')  # type: ignore
+
+        # If date is provided, check for a single matching object
+        if date:
+            queryset = self.get_queryset()  # get_queryset now filters by both project_id and date
+            if queryset.count() == 1:
+                # Serialize the single object and return it as a detail response
+                obj = queryset.first()
+                serializer = self.get_serializer(obj)
+                return CustomResponse(serializer.data, status=200)
+
+            if queryset.count() == 0:
+                raise NotFound("No DailyNote found matching the given project and date.", )
+            
+            raise NotFound("Multiple DailyNotes found matching the given project and date.")
+
+        # If no date is provided, fallback to standard list behavior
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         """
         Filter daily notes based on the project passed in the query params.
         Ensure the project belongs to the authenticated user.
         """
         project_id = self.request.query_params.get("project_id")  # type: ignore
+        date = self.request.query_params.get("date")  # type: ignore
 
         if not project_id:
             raise ValidationError({"project_id": "This query parameter is required."})
 
         queryset = DailyNote.objects.filter(project=project_id)
+
+        if date:
+            queryset = queryset.filter(date=date)
 
         return queryset
     
@@ -58,3 +86,5 @@ class DailyNoteDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = DailyNote.objects.all()
     serializer_class = DailyNoteSerializer
     permission_classes = [IsAuthenticated, IsProjectOwner]
+
+    
