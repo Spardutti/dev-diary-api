@@ -17,8 +17,8 @@ class DailyNoteView(generics.ListCreateAPIView):
 
     filterset_fields = ['project', 'date']
 
-    ordering_fields = ['created_at', 'updated_at']
-    ordering = ['-created_at'] 
+    ordering_fields = ['created_at', 'updated_at', 'date']
+    ordering = ['-date'] 
 
     def get(self, request, *args, **kwargs):
         """

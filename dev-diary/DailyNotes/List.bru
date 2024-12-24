@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{url}}/daily-notes/11/
+  url: {{url}}/daily-notes/?project_id=62&date=2024-12-23
   body: json
   auth: inherit
 }
 
 query {
-  ~project_id: 58
-  ~date: 2024-12-23
+  project_id: 62
+  date: 2024-12-23
   ~date: today
 }
 
