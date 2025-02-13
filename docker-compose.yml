@@ -1,0 +1,35 @@
+services:
+    db:
+        image: postgres:17
+        container_name: postgres_db
+        restart: always
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASS}
+            POSTGRES_DB: ${DB_NAME}
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+    backend:
+        build: .
+        container_name: express_app
+        restart: always
+        depends_on:
+            - db
+        ports:
+            - "3000:3000"
+        environment:
+            DB_HOST: ${DB_HOST}
+            DB_USER: ${DB_USER}
+            DB_PASS: ${DB_PASS}
+            DB_NAME: ${DB_NAME}
+            DB_PORT: 5432
+        volumes:
+            - .:/app
+            - /app/node_modules
+        command: "npm run dev"
+
+volumes:
+    pgdata:

@@ -1,0 +1,19 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/todo/create
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "walk chester",
+    "description": "potty break",
+    "projectId": "73a5a358-0d55-4b91-b201-6ffe236b59ed"
+  }
+}
