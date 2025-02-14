@@ -5,7 +5,8 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "nodemon -L --ext ts --exec 'npx ts-node -r tsconfig-paths/register src/server.ts'",
-    "prepare": "husky"
+    "prepare": "husky",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
