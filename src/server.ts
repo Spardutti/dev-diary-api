@@ -18,6 +18,7 @@ app.use(cors({ origin: "http://localhost:5173" }));
 app.use(`${apiUrl}/user`, routes.userRoutes);
 app.use(`${apiUrl}/project`, routes.projectRoutes);
 app.use(`${apiUrl}/todo`, routes.todoRoutes);
+app.use(`${apiUrl}/note`, routes.noteRoutes);
 
 setupAssociations();
 

@@ -1,0 +1,19 @@
+meta {
+  name: Update
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{url}}/note/update/13ba804e-7eee-4cba-bd94-bc51e519dd16
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "Note 1 e",
+    "content": "taking notes"
+   
+  }
+}

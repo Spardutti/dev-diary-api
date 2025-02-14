@@ -1,0 +1,19 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/note/create
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "Note 1",
+    "content": "taking notes",
+    "projectId": "9178816f-0ca7-498b-a697-d6b46fe00633"
+  }
+}

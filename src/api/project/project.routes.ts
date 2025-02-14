@@ -8,6 +8,6 @@ const routes = Router();
 
 routes.post("/create", authMiddleware, validateRequestBody(createProjectSchema), projectController.create);
 routes.get("/list", authMiddleware, projectController.list);
-routes.get("/:id", authMiddleware, projectController.show);
+routes.get("/show/:id", authMiddleware, projectController.show);
 
 export default routes;
