@@ -57,8 +57,27 @@ const update = async (req: Request, res: Response): Promise<any> => {
 	}
 };
 
+const remove = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const { id } = req.params;
+
+		const todo = await Todo.findByPk(id);
+
+		if (!todo) {
+			return res.status(404).json({ error: "Todo not found" });
+		}
+
+		await todo.destroy();
+
+		res.status(200).json(createResponse(200));
+	} catch (error) {
+		res.status(500).json({ error: "Failed to delete todo" });
+	}
+};
+
 export const todoController = {
 	create,
 	list,
 	update,
+	remove,
 };

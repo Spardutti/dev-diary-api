@@ -8,6 +8,9 @@ export interface UserAttributes {
 	email: string;
 	password: string;
 	lastVisitedProjectId: string | null;
+	refreshToken: string | null;
+	isGuest: boolean;
+	expiresAt: Date | null;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
@@ -18,6 +21,9 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
 	public email!: string;
 	public password!: string;
 	public lastVisitedProjectId!: string;
+	public refreshToken!: string;
+	public isGuest!: boolean;
+	public expiresAt!: Date;
 }
 
 User.init(
@@ -45,6 +51,21 @@ User.init(
 			type: DataTypes.UUID,
 			allowNull: true,
 			defaultValue: null,
+		},
+		refreshToken: {
+			type: DataTypes.STRING,
+			allowNull: true,
+			defaultValue: null,
+		},
+		isGuest: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false,
+		},
+
+		expiresAt: {
+			type: DataTypes.DATE,
+			defaultValue: null,
+			allowNull: true,
 		},
 	},
 	{

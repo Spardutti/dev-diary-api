@@ -9,5 +9,8 @@ const routes = Router();
 routes.post("/create", validateRequestBody(createUserSchema), userController.create);
 routes.post("/login", validateRequestBody(loginUserSchema), userController.login);
 routes.get("/me", authMiddleware, userController.me);
+routes.post("/logout", authMiddleware, userController.logout);
+routes.get("/refresh", userController.refresh);
+routes.post("/guest", userController.guestLogin);
 
 export default routes;

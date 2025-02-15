@@ -6,16 +6,19 @@
   "scripts": {
     "dev": "nodemon -L --ext ts --exec 'npx ts-node -r tsconfig-paths/register src/server.ts'",
     "prepare": "husky",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/passport-jwt": "^4.0.1",
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
@@ -35,6 +38,7 @@
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
     "@eslint/js": "^9.20.0",
+    "@faker-js/faker": "^9.5.0",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.2",
     "@types/sequelize": "^4.28.20",

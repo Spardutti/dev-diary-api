@@ -1,4 +1,4 @@
-export const createResponse = (status: 200 | 201, data = {}) => {
+export const createResponse = (status: 200 | 201 | 204, data = {}) => {
 	return {
 		status,
 		data,
