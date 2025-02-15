@@ -1,5 +1,5 @@
-import Project from "@/api/project/project.model";
-import User from "@/api/user/user.model";
+import Project from "../project/project.model";
+import User from "../user/user.model";
 import { faker } from "@faker-js/faker";
 import bcrypt from "bcryptjs";
 import dayjs from "dayjs";

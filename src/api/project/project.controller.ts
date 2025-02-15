@@ -1,6 +1,6 @@
-import { createResponse } from "@/api/helpers/responseHelper";
-import Project from "@/api/project/project.model";
-import User from "@/api/user/user.model";
+import { createResponse } from "../helpers/responseHelper";
+import Project from "../project/project.model";
+import User from "../user/user.model";
 import { Request, Response } from "express";
 
 const create = async (req: Request, res: Response): Promise<any> => {

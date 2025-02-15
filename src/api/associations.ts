@@ -1,7 +1,7 @@
-import User from "@/api/user/user.model";
-import Project from "@/api/project/project.model";
-import Todo from "@/api/todo/todo.model";
-import Note from "@/api/note/note.model";
+import User from "./user/user.model";
+import Project from "./project/project.model";
+import Todo from "./todo/todo.model";
+import Note from "./note/note.model";
 
 export const setupAssociations = () => {
 	// User - Project

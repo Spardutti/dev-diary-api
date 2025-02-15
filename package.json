@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/server.ts",
   "scripts": {
-    "dev": "nodemon -L --ext ts --exec 'npx ts-node -r tsconfig-paths/register src/server.ts'",
+    "dev": "nodemon -L --ext ts --exec 'npx ts-node src/server.ts'",
     "prepare": "husky",
     "build": "tsc",
     "start": "node dist/server.js"
@@ -30,7 +30,6 @@
     "pg": "^8.13.3",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.5",
-    "tsconfig-paths": "^4.2.0",
     "uuid": "^11.0.5",
     "zod": "^3.24.2"
   },

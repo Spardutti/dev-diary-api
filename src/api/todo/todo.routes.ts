@@ -1,7 +1,7 @@
-import authMiddleware from "@/api/middleware/authMiddleware";
-import { validateRequestBody } from "@/api/middleware/validateRequestBody";
-import { todoController } from "@/api/todo/todo.controller";
-import { createTodoSchema } from "@/api/todo/todo.schema";
+import authMiddleware from "../middleware/authMiddleware";
+import { validateRequestBody } from "../middleware/validateRequestBody";
+import { todoController } from "./todo.controller";
+import { createTodoSchema } from "./todo.schema";
 import { Router } from "express";
 
 const routes = Router();

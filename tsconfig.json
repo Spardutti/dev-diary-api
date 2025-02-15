@@ -5,23 +5,17 @@
     "moduleResolution": "NodeNext",
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": [
-        "*"
-      ]
-    },
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
   "include": [
-    "src/**/*.ts",
+    "src",
     "env.d.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist",
+    "dist"
   ]
 }

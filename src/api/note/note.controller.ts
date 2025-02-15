@@ -1,5 +1,5 @@
-import { createResponse } from "@/api/helpers/responseHelper";
-import Note from "@/api/note/note.model";
+import { createResponse } from "../helpers/responseHelper";
+import Note from "./note.model";
 import dayjs from "dayjs";
 import { Request, Response } from "express";
 import { Op } from "sequelize";

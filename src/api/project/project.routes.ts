@@ -1,7 +1,7 @@
-import authMiddleware from "@/api/middleware/authMiddleware";
-import { validateRequestBody } from "@/api/middleware/validateRequestBody";
-import { projectController } from "@/api/project/project.controller";
-import { createProjectSchema } from "@/api/project/project.schema";
+import authMiddleware from "../middleware/authMiddleware";
+import { validateRequestBody } from "../middleware/validateRequestBody";
+import { projectController } from "../project/project.controller";
+import { createProjectSchema } from "../project/project.schema";
 import { Router } from "express";
 
 const routes = Router();

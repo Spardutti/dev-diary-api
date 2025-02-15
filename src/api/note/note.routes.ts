@@ -1,7 +1,7 @@
-import authMiddleware from "@/api/middleware/authMiddleware";
-import { validateRequestBody } from "@/api/middleware/validateRequestBody";
-import { notesController } from "@/api/note/note.controller";
-import { createNoteSchema, updateNoteSchema } from "@/api/note/notes.schema";
+import authMiddleware from "../middleware/authMiddleware";
+import { validateRequestBody } from "../middleware/validateRequestBody";
+import { notesController } from "../note/note.controller";
+import { createNoteSchema, updateNoteSchema } from "../note/notes.schema";
 import { Router } from "express";
 
 const routes = Router();

@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import sequelize from "@/config/database";
+import sequelize from "../../config/database";
 
 interface NoteAttributes {
 	id: string;

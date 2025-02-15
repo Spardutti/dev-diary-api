@@ -1,5 +1,5 @@
-import { createResponse } from "@/api/helpers/responseHelper";
-import Todo from "@/api/todo/todo.model";
+import { createResponse } from "../helpers/responseHelper";
+import Todo from "./todo.model";
 import { Request, Response } from "express";
 
 const create = async (req: Request, res: Response): Promise<any> => {

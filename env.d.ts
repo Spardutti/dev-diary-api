@@ -11,5 +11,6 @@ declare namespace NodeJS {
 		DB_HOST: string;
 		DB_PORT: number;
 		FRONTEND_URL: string;
+		DATABASE_URL: string;
 	}
 }

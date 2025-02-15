@@ -1,4 +1,4 @@
-import User from "@/api/user/user.model";
+import User from "../user/user.model";
 
 export const serializeUser = (user: User) => ({
 	id: user.id,

@@ -1,12 +1,11 @@
-import User from "@/api/user/user.model";
-import { serializeUser } from "@/api/user/user.serializer";
+import User from "./user.model";
+import { serializeUser } from "./user.serializer";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { createResponse } from "@/api/helpers/responseHelper";
-import Project from "@/api/project/project.model";
+import { createResponse } from "../helpers/responseHelper";
 import { faker } from "@faker-js/faker";
-import { createDefaultProject, createGuestUser, generateTokens } from "@/api/user/user.helpers";
+import { createDefaultProject, createGuestUser, generateTokens } from "./user.helpers";
 
 const create = async (req: Request, res: Response): Promise<any> => {
 	try {

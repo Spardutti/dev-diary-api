@@ -1,10 +1,10 @@
 import "dotenv/config";
 import express from "express";
 import sequelize from "./config/database";
-import routes from "@/api/routes";
-import passport from "@/config/passportConfig";
+import routes from "./api/routes";
+import passport from "./config/passportConfig";
 import cors from "cors";
-import { setupAssociations } from "@/api/associations";
+import { setupAssociations } from "./api/associations";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -29,7 +29,8 @@ const startServer = async () => {
 		await sequelize.authenticate();
 		console.log("✅ Database connected successfully.");
 
-		await sequelize.sync({ alter: true });
+		await sequelize.sync();
+		await sequelize.getQueryInterface().showAllTables();
 		console.log("✅ Models synced with database.");
 
 		app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

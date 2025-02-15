@@ -1,23 +1,23 @@
 services:
-    db:
-        image: postgres:17
-        container_name: postgres_db
-        restart: always
-        environment:
-            POSTGRES_USER: ${DB_USER}
-            POSTGRES_PASSWORD: ${DB_PASS}
-            POSTGRES_DB: ${DB_NAME}
-        ports:
-            - "5432:5432"
-        volumes:
-            - pgdata:/var/lib/postgresql/data
+    # db:
+    #     image: postgres:17
+    #     container_name: postgres_db
+    #     restart: always
+    #     environment:
+    #         POSTGRES_USER: ${DB_USER}
+    #         POSTGRES_PASSWORD: ${DB_PASS}
+    #         POSTGRES_DB: ${DB_NAME}
+    #     ports:
+    #         - "5432:5432"
+    #     volumes:
+    #         - pgdata:/var/lib/postgresql/data
 
     backend:
         build: .
         container_name: express_app
         restart: always
-        depends_on:
-            - db
+        # depends_on:
+        #     - db
         ports:
             - "3000:3000"
         environment:
