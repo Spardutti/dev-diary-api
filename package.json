@@ -7,7 +7,7 @@
     "dev": "nodemon -L --ext ts --exec 'npx ts-node src/server.ts'",
     "prepare": "husky",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "npm run build && node dist/server.js"
   },
   "author": "",
   "license": "ISC",
