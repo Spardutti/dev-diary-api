@@ -11,6 +11,7 @@ export interface UserAttributes {
 	refreshToken: string | null;
 	isGuest: boolean;
 	expiresAt: Date | null;
+	todayNoteId: string | null;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
@@ -24,6 +25,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
 	public refreshToken!: string;
 	public isGuest!: boolean;
 	public expiresAt!: Date;
+	public todayNoteId!: string | null;
 }
 
 User.init(
@@ -60,6 +62,11 @@ User.init(
 		isGuest: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false,
+		},
+
+		todayNoteId: {
+			type: DataTypes.UUID,
+			allowNull: true,
 		},
 
 		expiresAt: {

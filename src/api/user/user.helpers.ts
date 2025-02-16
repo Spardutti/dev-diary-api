@@ -4,6 +4,8 @@ import { faker } from "@faker-js/faker";
 import bcrypt from "bcryptjs";
 import dayjs from "dayjs";
 import jwt from "jsonwebtoken";
+import Note from "../note/note.model";
+import { Op } from "sequelize";
 
 const accessTokenExpiry = "1d";
 const refreshTokenExpiry = "7d";
@@ -33,4 +35,39 @@ export const createDefaultProject = async (user: User, name = "My First Project"
 	const project = await Project.create({ name, userId: user.id, description });
 
 	await user.update({ lastVisitedProjectId: project.id });
+};
+
+export const createTodayNote = async (user: User) => {
+	const project = await Project.findByPk(user.lastVisitedProjectId);
+
+	if (!project) {
+		return;
+	}
+
+	const noteExist = await Note.findOne({
+		where: {
+			projectId: project.id,
+			createdAt: {
+				[Op.between]: [dayjs().startOf("day").toDate(), dayjs().endOf("day").toDate()],
+			},
+		},
+	});
+
+	if (!noteExist) {
+		const selectedDate = dayjs();
+		const day = selectedDate.format("ddd");
+		const numericDate = selectedDate.date();
+		const monthAndYear = selectedDate.format("MMM YYYY");
+
+		const title = `Notes Of ${day} ${numericDate}, ${monthAndYear}`;
+
+		const todayNote = await Note.create({
+			title,
+			content: "",
+			projectId: project.id,
+			createdAt: dayjs().toDate(),
+		});
+
+		await user.update({ todayNoteId: todayNote.id });
+	}
 };

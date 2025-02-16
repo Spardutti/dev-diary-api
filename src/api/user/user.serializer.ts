@@ -5,4 +5,5 @@ export const serializeUser = (user: User) => ({
 	name: user.name,
 	email: user.email,
 	lastVisitedProjectId: user.lastVisitedProjectId,
+	todayNoteId: user.todayNoteId,
 });
