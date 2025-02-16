@@ -81,19 +81,10 @@ const update = async (req: Request, res: Response): Promise<any> => {
 
 const show = async (req: Request, res: Response): Promise<any> => {
 	try {
-		const { date, projectId } = req.params;
+		const { noteId } = req.params;
 
-		const dayStart = dayjs(date).startOf("day").toDate();
-		const dayEnd = dayjs(date).endOf("day").toDate();
+		const note = await Note.findByPk(noteId);
 
-		const note = await Note.findOne({
-			where: {
-				createdAt: {
-					[Op.between]: [dayStart, dayEnd],
-				},
-				projectId,
-			},
-		});
 		if (!note) {
 			return res.status(404).json({ error: "Note not found" });
 		}
