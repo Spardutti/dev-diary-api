@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+RUN npm run build
+
 # Ensure migrations and config are in dist
 RUN cp -r migrations dist/migrations
 RUN cp -r config dist/config
