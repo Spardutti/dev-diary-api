@@ -1,16 +1,16 @@
 services:
-    # db:
-    #     image: postgres:17
-    #     container_name: postgres_db
-    #     restart: always
-    #     environment:
-    #         POSTGRES_USER: ${DB_USER}
-    #         POSTGRES_PASSWORD: ${DB_PASS}
-    #         POSTGRES_DB: ${DB_NAME}
-    #     ports:
-    #         - "5432:5432"
-    #     volumes:
-    #         - pgdata:/var/lib/postgresql/data
+    db:
+        image: postgres:17
+        container_name: postgres_db
+        restart: always
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASS}
+            POSTGRES_DB: ${DB_NAME}
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
 
     backend:
         build: .
@@ -29,7 +29,7 @@ services:
         volumes:
             - .:/app
             - /app/node_modules
-        command: "npm run dev"
+        command: sh -c "npx sequelize-cli db:migrate --env development && npm run dev" # ✅ Runs migrations before starting the app
 
 volumes:
     pgdata:
