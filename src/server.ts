@@ -21,6 +21,7 @@ app.use(`${apiUrl}/user`, routes.userRoutes);
 app.use(`${apiUrl}/project`, routes.projectRoutes);
 app.use(`${apiUrl}/todo`, routes.todoRoutes);
 app.use(`${apiUrl}/note`, routes.noteRoutes);
+app.use(`${apiUrl}/health`, routes.healthRoutes);
 
 setupAssociations();
 
