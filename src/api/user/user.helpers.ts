@@ -37,14 +37,14 @@ export const createDefaultProject = async (user: User, name = "My First Project"
 	await user.update({ lastVisitedProjectId: project.id });
 };
 
-export const createTodayNote = async (user: User) => {
+export const findOrCreateTodayNote = async (user: User) => {
 	const project = await Project.findByPk(user.lastVisitedProjectId);
 
 	if (!project) {
 		return;
 	}
 
-	const noteExist = await Note.findOne({
+	const todayNote = await Note.findOne({
 		where: {
 			projectId: project.id,
 			createdAt: {
@@ -53,7 +53,7 @@ export const createTodayNote = async (user: User) => {
 		},
 	});
 
-	if (!noteExist) {
+	if (!todayNote) {
 		const selectedDate = dayjs();
 		const day = selectedDate.format("ddd");
 		const numericDate = selectedDate.date();
@@ -61,13 +61,13 @@ export const createTodayNote = async (user: User) => {
 
 		const title = `Notes Of ${day} ${numericDate}, ${monthAndYear}`;
 
-		const todayNote = await Note.create({
+		await Note.create({
 			title,
 			content: "",
 			projectId: project.id,
 			createdAt: dayjs().toDate(),
 		});
-
-		await user.update({ todayNoteId: todayNote.id });
 	}
+
+	return todayNote;
 };

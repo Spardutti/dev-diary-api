@@ -1,5 +1,6 @@
 import { createResponse } from "../helpers/responseHelper";
 import Project from "../project/project.model";
+import { findOrCreateTodayNote } from "../user/user.helpers";
 import User from "../user/user.model";
 import { Request, Response } from "express";
 
@@ -32,7 +33,11 @@ const show = async (req: Request, res: Response): Promise<any> => {
 		if (!project) {
 			return res.status(404).json({ error: "Project not found" });
 		}
-		res.status(200).json(createResponse(200, project));
+
+		await user.update({ lastVisitedProjectId: project.id });
+		const note = await findOrCreateTodayNote(user);
+
+		res.status(200).json(createResponse(200, { project, todayNoteId: note?.id }));
 	} catch (error) {
 		res.status(500).json({ error: "Failed to show project" });
 	}
