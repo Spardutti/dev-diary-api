@@ -1,31 +1,15 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, InferAttributes, InferCreationAttributes, Model, Optional } from "sequelize";
 import sequelize from "../../config/database";
 import { v4 as uuidv4 } from "uuid";
 
-export interface UserAttributes {
-	id: string;
-	name: string;
-	email: string;
-	password: string;
-	lastVisitedProjectId: string | null;
-	refreshToken: string | null;
-	isGuest: boolean;
-	expiresAt: Date | null;
-	todayNoteId: string | null;
-}
-
-interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
-
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-	public id!: string;
-	public name!: string;
-	public email!: string;
-	public password!: string;
-	public lastVisitedProjectId!: string;
-	public refreshToken!: string;
-	public isGuest!: boolean;
-	public expiresAt!: Date;
-	public todayNoteId!: string | null;
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User, { omit: "id" | "lastVisitedProjectId" }>> {
+	declare id: string;
+	declare name: string;
+	declare email: string;
+	declare password: string;
+	declare lastVisitedProjectId: string;
+	declare isGuest: boolean;
+	declare expiresAt: Date | null;
 }
 
 User.init(
@@ -54,19 +38,10 @@ User.init(
 			allowNull: true,
 			defaultValue: null,
 		},
-		refreshToken: {
-			type: DataTypes.STRING,
-			allowNull: true,
-			defaultValue: null,
-		},
+
 		isGuest: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false,
-		},
-
-		todayNoteId: {
-			type: DataTypes.UUID,
-			allowNull: true,
 		},
 
 		expiresAt: {

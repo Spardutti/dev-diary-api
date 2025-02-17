@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { createResponse } from "../helpers/responseHelper";
 import { faker } from "@faker-js/faker";
-import { createDefaultProject, createGuestUser, createTodayNote, generateTokens } from "./user.helpers";
+import { createDefaultProject, createGuestUser, findOrCreateTodayNote, generateTokens } from "./user.helpers";
 
 const create = async (req: Request, res: Response): Promise<any> => {
 	try {
@@ -53,7 +53,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
 			maxAge: refreshTokenMaxAge,
 		});
 
-		await createTodayNote(user);
+		await findOrCreateTodayNote(user);
 
 		return res.json(createResponse(200, { token, user: serializeUser(user) }));
 	} catch (error) {
@@ -117,7 +117,7 @@ const guestLogin = async (req: Request, res: Response): Promise<any> => {
 
 		await createDefaultProject(guest, faker.commerce.productName(), faker.commerce.productDescription());
 
-		await createTodayNote(guest);
+		await findOrCreateTodayNote(guest);
 
 		const { refreshToken, refreshTokenMaxAge, token } = generateTokens(guest.id);
 
