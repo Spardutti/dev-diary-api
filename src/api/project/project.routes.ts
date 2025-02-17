@@ -9,5 +9,6 @@ const routes = Router();
 routes.post("/create", authMiddleware, validateRequestBody(createProjectSchema), projectController.create);
 routes.get("/list", authMiddleware, projectController.list);
 routes.get("/show/:id", authMiddleware, projectController.show);
+routes.put("/update/:id", authMiddleware, validateRequestBody(createProjectSchema), projectController.update);
 
 export default routes;

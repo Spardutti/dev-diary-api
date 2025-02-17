@@ -38,4 +38,22 @@ const show = async (req: Request, res: Response): Promise<any> => {
 	}
 };
 
-export const projectController = { create, list, show };
+const update = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const user = req.user! as User;
+
+		const project = await Project.findOne({ where: { id: req.params.id, userId: user.id } });
+
+		if (!project) {
+			return res.status(404).json({ error: "Project not found" });
+		}
+		const { name, description } = req.body;
+
+		await project.update({ name, description });
+		res.status(200).json(createResponse(200, project));
+	} catch (error) {
+		res.status(500).json({ error: "Failed to update project" });
+	}
+};
+
+export const projectController = { create, list, show, update };
