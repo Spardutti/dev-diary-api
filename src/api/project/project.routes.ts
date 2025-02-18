@@ -10,5 +10,6 @@ routes.post("/create", authMiddleware, validateRequestBody(createProjectSchema),
 routes.get("/list", authMiddleware, projectController.list);
 routes.get("/show/:id", authMiddleware, projectController.show);
 routes.put("/update/:id", authMiddleware, validateRequestBody(createProjectSchema), projectController.update);
+routes.delete("/delete/:id", authMiddleware, projectController.remove);
 
 export default routes;

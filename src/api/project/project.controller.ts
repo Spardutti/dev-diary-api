@@ -61,4 +61,35 @@ const update = async (req: Request, res: Response): Promise<any> => {
 	}
 };
 
-export const projectController = { create, list, show, update };
+import { Op } from "sequelize";
+
+const remove = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const { id } = req.params;
+		const user = req.user as User;
+
+		const userProjects = await Project.findAll({ where: { userId: user.id } });
+
+		if (userProjects.length <= 1) {
+			return res.status(400).json({ error: "Cannot delete the only remaining project" });
+		}
+
+		const projectIndex = userProjects.findIndex((p) => p.id === id);
+		if (projectIndex === -1) {
+			return res.status(404).json({ error: "Project not found" });
+		}
+
+		const [deletedProject] = userProjects.splice(projectIndex, 1);
+
+		await deletedProject.destroy();
+
+		const redirectToProject = userProjects[0] || null;
+
+		return res.status(200).json(createResponse(200, { project: redirectToProject }));
+	} catch (error) {
+		console.error("Error deleting project:", error);
+		return res.status(500).json({ error: "Failed to delete project" });
+	}
+};
+
+export const projectController = { create, list, show, update, remove };
