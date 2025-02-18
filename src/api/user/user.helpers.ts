@@ -61,7 +61,7 @@ export const findOrCreateTodayNote = async (user: User) => {
 
 		const title = `Notes Of ${day} ${numericDate}, ${monthAndYear}`;
 
-		await Note.create({
+		return await Note.create({
 			title,
 			content: "",
 			projectId: project.id,
