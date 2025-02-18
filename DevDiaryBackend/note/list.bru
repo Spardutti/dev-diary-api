@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{url}}/note/list
+  url: {{url}}/note/list?projectId=5c9eb116-ce87-45ba-ba62-1b456feb777f
   body: none
   auth: inherit
+}
+
+query {
+  projectId: 5c9eb116-ce87-45ba-ba62-1b456feb777f
 }
