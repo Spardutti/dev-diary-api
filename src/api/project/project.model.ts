@@ -1,21 +1,21 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import sequelize from "../../config/database";
 import { v4 as uuidv4 } from "uuid";
+import { encodeHashId } from "../helpers/hashid";
 
-interface ProjectAttributes {
-	id: string;
-	description: string;
-	name: string;
-	userId: string;
-}
+class Project extends Model<InferAttributes<Project, { omit: "hashId" | "userHashId" }>, InferCreationAttributes<Project, { omit: "id" | "hashId" | "userHashId" }>> {
+	declare id: string;
+	declare description: string;
+	declare name: string;
+	declare userId: string;
 
-interface ProjectCreationAttributes extends Optional<ProjectAttributes, "id"> {}
+	get hashId(): string {
+		return encodeHashId(this.id);
+	}
 
-class Project extends Model<ProjectAttributes, ProjectCreationAttributes> implements ProjectAttributes {
-	public id!: string;
-	public description!: string;
-	public name!: string;
-	public userId!: string;
+	get userHashId(): string {
+		return encodeHashId(this.userId);
+	}
 }
 
 Project.init(

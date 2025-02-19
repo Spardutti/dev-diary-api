@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import jwt from "jsonwebtoken";
 import Note from "../note/note.model";
 import { Op } from "sequelize";
+import { decodeHashId } from "../helpers/hashid";
 
 const accessTokenExpiry = "1d";
 const refreshTokenExpiry = "7d";

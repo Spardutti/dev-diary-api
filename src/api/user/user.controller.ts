@@ -57,7 +57,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
 
 		return res.json(createResponse(200, { token, user: serializeUser(user) }));
 	} catch (error) {
-		return res.status(500).json({ error: "Server error" });
+		return res.status(500).json({ message: "Server error", error });
 	}
 };
 
