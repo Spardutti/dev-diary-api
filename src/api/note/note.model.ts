@@ -1,23 +1,22 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import sequelize from "../../config/database";
+import { encodeHashId } from "../helpers/hashid";
 
-interface NoteAttributes {
-	id: string;
-	title: string;
-	content: string;
-	projectId: string;
-	createdAt: Date;
-}
+class Note extends Model<InferAttributes<Note, { omit: "projectHashId" | "hashId" }>, InferCreationAttributes<Note, { omit: "id" | "projectHashId" | "hashId" }>> {
+	declare id: string;
+	declare title: string;
+	declare content: string;
+	declare projectId: string;
+	declare readonly createdAt: Date;
 
-interface NoteCreationAttributes extends Optional<NoteAttributes, "id"> {}
+	get projectHashId(): string {
+		return encodeHashId(this.projectId);
+	}
 
-class Note extends Model<NoteAttributes, NoteCreationAttributes> implements NoteAttributes {
-	public id!: string;
-	public title!: string;
-	public content!: string;
-	public projectId!: string;
-	public readonly createdAt!: Date;
+	get hashId(): string {
+		return encodeHashId(this.id);
+	}
 }
 
 Note.init(

@@ -1,23 +1,29 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, InferAttributes, InferCreationAttributes, Model, Optional } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import sequelize from "../../config/database";
+import { encodeHashId } from "../helpers/hashid";
 
-export interface TodoAttributes {
-	id: string;
-	title: string;
-	description: string;
-	projectId: string;
-	status: boolean;
-}
+class Todo extends Model<InferAttributes<Todo, { omit: "projectHashId" | "createdAt" | "updatedAt" | "hashId" }>, InferCreationAttributes<Todo, { omit: "id" | "projectHashId" | "createdAt" | "updatedAt" | "hashId" }>> {
+	declare id: string;
+	declare title: string;
+	declare description: string;
+	declare projectId: string;
+	declare status: boolean;
 
-interface TodoCreationAttributes extends Optional<TodoAttributes, "id"> {}
+	get projectHashId(): string {
+		return encodeHashId(this.projectId);
+	}
 
-class Todo extends Model<TodoAttributes, TodoCreationAttributes> implements TodoAttributes {
-	public id!: string;
-	public title!: string;
-	public description!: string;
-	public projectId!: string;
-	public status!: boolean;
+	get createdAt(): string {
+		return this.createdAt;
+	}
+	get updatedAt(): string {
+		return this.updatedAt;
+	}
+
+	get hashId(): string {
+		return encodeHashId(this.id);
+	}
 }
 
 Todo.init(

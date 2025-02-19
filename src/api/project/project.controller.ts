@@ -1,8 +1,10 @@
+import { decodeHashId } from "./../helpers/hashid";
 import { createResponse } from "../helpers/responseHelper";
 import Project from "../project/project.model";
 import { findOrCreateTodayNote } from "../user/user.helpers";
 import User from "../user/user.model";
 import { Request, Response } from "express";
+import { projectSerializer } from "../project/project.serializer";
 
 const create = async (req: Request, res: Response): Promise<any> => {
 	try {
@@ -10,7 +12,9 @@ const create = async (req: Request, res: Response): Promise<any> => {
 		const user = req.user! as User;
 
 		const project = await Project.create({ name, description, userId: user.id });
-		res.status(200).json(createResponse(201, project));
+		await findOrCreateTodayNote(user);
+		await user.update({ lastVisitedProjectId: project.id });
+		res.status(200).json(createResponse(201, projectSerializer(project)));
 	} catch (error) {
 		res.status(500).json({ error: "Failed to create project" });
 	}
@@ -20,7 +24,7 @@ const list = async (req: Request, res: Response): Promise<any> => {
 	try {
 		const user = req.user! as User;
 		const projects = await Project.findAll({ where: { userId: user.id } });
-		res.status(200).json(createResponse(200, projects));
+		res.status(200).json(createResponse(200, projectSerializer(projects)));
 	} catch (error) {
 		res.status(500).json({ error: "Failed to list projects" });
 	}
@@ -29,7 +33,7 @@ const list = async (req: Request, res: Response): Promise<any> => {
 const show = async (req: Request, res: Response): Promise<any> => {
 	try {
 		const user = req.user! as User;
-		const project = await Project.findOne({ where: { id: req.params.id, userId: user.id } });
+		const project = await Project.findOne({ where: { id: decodeHashId(req.params.id), userId: user.id } });
 		if (!project) {
 			return res.status(404).json({ error: "Project not found" });
 		}
@@ -37,7 +41,8 @@ const show = async (req: Request, res: Response): Promise<any> => {
 		await user.update({ lastVisitedProjectId: project.id });
 		const note = await findOrCreateTodayNote(user);
 
-		res.status(200).json(createResponse(200, { project, todayNoteId: note?.id }));
+		// create method hashId on note and use it here to return the hash
+		res.status(200).json(createResponse(200, { project: projectSerializer(project), todayNoteId: note?.hashId }));
 	} catch (error) {
 		res.status(500).json({ error: "Failed to show project" });
 	}
@@ -46,8 +51,9 @@ const show = async (req: Request, res: Response): Promise<any> => {
 const update = async (req: Request, res: Response): Promise<any> => {
 	try {
 		const user = req.user! as User;
+		const { id } = req.params;
 
-		const project = await Project.findOne({ where: { id: req.params.id, userId: user.id } });
+		const project = await Project.findOne({ where: { id: decodeHashId(id), userId: user.id } });
 
 		if (!project) {
 			return res.status(404).json({ error: "Project not found" });
@@ -55,13 +61,11 @@ const update = async (req: Request, res: Response): Promise<any> => {
 		const { name, description } = req.body;
 
 		await project.update({ name, description });
-		res.status(200).json(createResponse(200, project));
+		res.status(200).json(createResponse(200, projectSerializer(project)));
 	} catch (error) {
 		res.status(500).json({ error: "Failed to update project" });
 	}
 };
-
-import { Op } from "sequelize";
 
 const remove = async (req: Request, res: Response): Promise<any> => {
 	try {
@@ -70,11 +74,12 @@ const remove = async (req: Request, res: Response): Promise<any> => {
 
 		const userProjects = await Project.findAll({ where: { userId: user.id } });
 
+		console.log("userProjects:", userProjects);
 		if (userProjects.length <= 1) {
 			return res.status(400).json({ error: "Cannot delete the only remaining project" });
 		}
 
-		const projectIndex = userProjects.findIndex((p) => p.id === id);
+		const projectIndex = userProjects.findIndex((p) => p.hashId === id);
 		if (projectIndex === -1) {
 			return res.status(404).json({ error: "Project not found" });
 		}
@@ -85,7 +90,7 @@ const remove = async (req: Request, res: Response): Promise<any> => {
 
 		const redirectToProject = userProjects[0] || null;
 
-		return res.status(200).json(createResponse(200, { project: redirectToProject }));
+		return res.status(200).json(createResponse(200, projectSerializer(redirectToProject)));
 	} catch (error) {
 		console.error("Error deleting project:", error);
 		return res.status(500).json({ error: "Failed to delete project" });
