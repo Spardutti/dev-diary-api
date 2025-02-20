@@ -16,8 +16,8 @@ services:
         build: .
         container_name: express_app
         restart: always
-        # depends_on:
-        #     - db
+        depends_on:
+            - db
         ports:
             - "3000:3000"
         environment:

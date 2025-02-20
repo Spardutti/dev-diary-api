@@ -6,9 +6,9 @@ import { decodeHashId } from "../helpers/hashid";
 
 const create = async (req: Request, res: Response): Promise<any> => {
 	try {
-		const { description, title, projectId } = req.body;
+		const { description, title, projectId, priority } = req.body;
 
-		const todo = await Todo.create({ description, title, projectId: decodeHashId(projectId), status: false });
+		const todo = await Todo.create({ description, title, projectId: decodeHashId(projectId), status: false, priority });
 
 		res.status(201).json(createResponse(201, todoSerializer(todo)));
 	} catch (error) {
@@ -22,11 +22,14 @@ const list = async (req: Request, res: Response): Promise<any> => {
 
 		const order: [string, string][] = [];
 
-		if (orderBy && typeof orderBy === "string") {
+		if (orderBy) {
+			// Ensure orderBy supports multiple fields (comma-separated)
+			const orderByFields = typeof orderBy === "string" ? orderBy.split(",") : [];
 			const direction = orderDirection === "asc" ? "ASC" : "DESC";
-			order.push([orderBy, direction]);
-		} else {
-			order.push(["createdAt", "DESC"]);
+
+			orderByFields.forEach((field) => {
+				order.push([field.trim(), direction]);
+			});
 		}
 
 		const projectId = filters?.projectId ? decodeHashId(filters.projectId as string) : undefined;
@@ -45,7 +48,7 @@ const list = async (req: Request, res: Response): Promise<any> => {
 const update = async (req: Request, res: Response): Promise<any> => {
 	try {
 		const { id } = req.params;
-		const { status, description, title } = req.body;
+		const { status, description, title, priority } = req.body;
 
 		const todo = await Todo.findByPk(decodeHashId(id));
 
@@ -53,7 +56,7 @@ const update = async (req: Request, res: Response): Promise<any> => {
 			return res.status(404).json({ error: "Todo not found" });
 		}
 
-		await todo.update({ status, description, title });
+		await todo.update({ status, description, title, priority });
 
 		res.status(200).json(createResponse(200, todoSerializer(todo)));
 	} catch (error) {

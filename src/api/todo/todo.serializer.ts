@@ -6,6 +6,7 @@ export const todoSerializer = (input: Todo | Todo[]): Partial<Todo> | Partial<To
 		title: todo.title,
 		description: todo.description,
 		status: todo.status,
+		priority: todo.priority,
 		projectId: todo.projectHashId,
 		createdAt: todo.createdAt,
 		updatedAt: todo.updatedAt,
