@@ -23,11 +23,12 @@ const list = async (req: Request, res: Response): Promise<any> => {
 		const order: [string, string][] = [];
 
 		if (orderBy) {
-			// Ensure orderBy supports multiple fields (comma-separated)
+			// Split fields and directions
 			const orderByFields = typeof orderBy === "string" ? orderBy.split(",") : [];
-			const direction = orderDirection === "asc" ? "ASC" : "DESC";
+			const orderDirections = typeof orderDirection === "string" ? orderDirection.split(",") : [];
 
-			orderByFields.forEach((field) => {
+			orderByFields.forEach((field, index) => {
+				const direction = orderDirections[index]?.toLowerCase() === "asc" ? "ASC" : "DESC";
 				order.push([field.trim(), direction]);
 			});
 		}
@@ -55,8 +56,9 @@ const update = async (req: Request, res: Response): Promise<any> => {
 		if (!todo) {
 			return res.status(404).json({ error: "Todo not found" });
 		}
+		const completedAt = status ? new Date() : null;
 
-		await todo.update({ status, description, title, priority });
+		await todo.update({ status, description, title, priority, completedAt });
 
 		res.status(200).json(createResponse(200, todoSerializer(todo)));
 	} catch (error) {

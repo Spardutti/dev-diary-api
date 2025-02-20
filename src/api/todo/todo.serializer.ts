@@ -10,6 +10,7 @@ export const todoSerializer = (input: Todo | Todo[]): Partial<Todo> | Partial<To
 		projectId: todo.projectHashId,
 		createdAt: todo.createdAt,
 		updatedAt: todo.updatedAt,
+		completedAt: todo.completedAt,
 	});
 
 	return Array.isArray(input) ? input.map(serialize) : serialize(input);
