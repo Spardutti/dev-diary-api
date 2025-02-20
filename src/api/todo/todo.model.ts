@@ -17,6 +17,7 @@ class Todo extends Model<InferAttributes<Todo, { omit: "projectHashId" | "create
 	declare projectId: string;
 	declare status: boolean;
 	declare priority: number;
+	declare completedAt: Date | null;
 
 	get projectHashId(): string {
 		return encodeHashId(this.projectId);
@@ -63,6 +64,10 @@ Todo.init(
 			validate: {
 				isIn: [[0, 1, 2, 3]],
 			},
+		},
+		completedAt: {
+			type: DataTypes.DATE,
+			allowNull: true,
 		},
 	},
 	{
