@@ -81,17 +81,22 @@ const refresh = async (req: Request, res: Response): Promise<any> => {
 			return res.status(401).json({ error: "Unauthorized" });
 		}
 
-		const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { id: string };
+		try {
+			const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { id: string };
 
-		const user = await User.findByPk(decoded.id);
+			const user = await User.findByPk(decoded.id);
 
-		if (!user) {
-			return res.status(401).json({ error: "Unauthorized" });
+			if (!user) {
+				return res.status(401).json({ error: "Unauthorized" });
+			}
+
+			const { token } = generateTokens(user.id);
+
+			return res.json(createResponse(200, { token }));
+		} catch (error) {
+			// Client axios wont catch 401 as error so we throw 404.
+			res.status(404).json({ error: "Unauthorized" });
 		}
-
-		const { token } = generateTokens(user.id);
-
-		return res.json(createResponse(200, { token }));
 	} catch (error) {
 		return res.status(500).json({ error: "Server error" });
 	}
