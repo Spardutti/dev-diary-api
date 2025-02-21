@@ -1,0 +1,23 @@
+meta {
+  name: List
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{url}}/snippet/list
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "Express Route export",
+    "description": "Easy way to export routes to be able to loop them in server.ts",
+    "code": "const routes = { user: userRoutes, project: projectRoutes, todo: todoRoutes,note: noteRoutes, health: healthRoutes,snippet: snippetRoutes"
+  }
+  
+  
+  
+  
+}

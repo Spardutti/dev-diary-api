@@ -17,11 +17,9 @@ app.use(passport.initialize());
 app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(cookieParser());
 
-app.use(`${apiUrl}/user`, routes.userRoutes);
-app.use(`${apiUrl}/project`, routes.projectRoutes);
-app.use(`${apiUrl}/todo`, routes.todoRoutes);
-app.use(`${apiUrl}/note`, routes.noteRoutes);
-app.use(`${apiUrl}/health`, routes.healthRoutes);
+Object.entries(routes).forEach(([path, route]) => {
+	app.use(`${apiUrl}/${path}`, route);
+});
 
 setupAssociations();
 
@@ -30,7 +28,6 @@ const startServer = async () => {
 		await sequelize.authenticate();
 		console.log("✅ Database connected successfully.");
 
-		await sequelize.sync();
 		await sequelize.getQueryInterface().showAllTables();
 		console.log("✅ Models synced with database.");
 

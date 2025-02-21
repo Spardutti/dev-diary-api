@@ -3,11 +3,15 @@ import projectRoutes from "./project/project.routes";
 import todoRoutes from "./todo/todo.routes";
 import noteRoutes from "./note/note.routes";
 import healthRoutes from "./health/health.routes";
+import snippetRoutes from "./snippet/snippet.routes";
 
-export default {
-	userRoutes,
-	projectRoutes,
-	todoRoutes,
-	noteRoutes,
-	healthRoutes,
+const routes = {
+	user: userRoutes,
+	project: projectRoutes,
+	todo: todoRoutes,
+	note: noteRoutes,
+	health: healthRoutes,
+	snippet: snippetRoutes,
 };
+
+export default routes;
