@@ -49,7 +49,8 @@ const login = async (req: Request, res: Response): Promise<any> => {
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production", // Ensures secure cookies in production
-			sameSite: "strict",
+			sameSite: "none",
+			domain: ".onrender.com",
 			maxAge: refreshTokenMaxAge,
 		});
 
