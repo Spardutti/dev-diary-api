@@ -48,8 +48,9 @@ const login = async (req: Request, res: Response): Promise<any> => {
 
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === "production", // Ensures secure cookies in production
+			// secure: process.env.NODE_ENV === "production", // Ensures secure cookies in production
 			maxAge: refreshTokenMaxAge,
+			sameSite: "none",
 		});
 
 		await findOrCreateTodayNote(user);
