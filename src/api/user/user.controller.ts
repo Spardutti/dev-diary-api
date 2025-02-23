@@ -116,4 +116,28 @@ const logout = async (req: Request, res: Response): Promise<any> => {
 	}
 };
 
-export const userController = { create, login, me, refresh, logout };
+const guest = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const guestUser = await User.findOne({ where: { email: "guest@guest.guest" } });
+
+		if (!guestUser) {
+			return res.status(404).json({ message: "Guest user not found" });
+		}
+
+		const { refreshToken, refreshTokenMaxAge, token } = generateTokens(guestUser.id);
+
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV !== "development",
+			maxAge: refreshTokenMaxAge,
+			sameSite: "none",
+		});
+
+		return res.json(createResponse(200, { token, user: serializeUser(guestUser) }));
+	} catch (error) {
+		console.error("Guest login error:", error);
+		return res.status(500).json({ message: "Server error" });
+	}
+};
+
+export const userController = { create, login, me, refresh, logout, guest };
