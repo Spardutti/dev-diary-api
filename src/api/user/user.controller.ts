@@ -116,32 +116,4 @@ const logout = async (req: Request, res: Response): Promise<any> => {
 	}
 };
 
-const guestLogin = async (req: Request, res: Response): Promise<any> => {
-	try {
-		const guest = await createGuestUser();
-
-		await createDefaultProject(guest, faker.commerce.productName(), faker.commerce.productDescription());
-
-		await findOrCreateTodayNote(guest);
-
-		const { refreshToken, refreshTokenMaxAge, token } = generateTokens(guest.id);
-
-		res.cookie("refreshToken", refreshToken, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			sameSite: "strict",
-			maxAge: refreshTokenMaxAge,
-		});
-
-		res.json(
-			createResponse(200, {
-				token,
-				user: serializeUser(guest),
-			})
-		);
-	} catch (error) {
-		res.status(500).json({ error, message: "Server Error" });
-	}
-};
-
-export const userController = { create, login, me, refresh, logout, guestLogin };
+export const userController = { create, login, me, refresh, logout };
