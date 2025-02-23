@@ -6,6 +6,7 @@ import passport from "./config/passportConfig";
 import cors from "cors";
 import { setupAssociations } from "./api/associations";
 import cookieParser from "cookie-parser";
+import { guestCleaner } from "./cron/guestData";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,7 +32,10 @@ const startServer = async () => {
 		await sequelize.getQueryInterface().showAllTables();
 		console.log("✅ Models synced with database.");
 
-		app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+		app.listen(PORT, () => {
+			console.log(`🚀 Server running on port ${PORT}`);
+			guestCleaner.start();
+		});
 	} catch (error) {
 		console.error("❌ Database connection failed:", error);
 	}

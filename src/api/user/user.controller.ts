@@ -136,17 +136,11 @@ const guestLogin = async (req: Request, res: Response): Promise<any> => {
 		res.json(
 			createResponse(200, {
 				token,
-				user: {
-					id: guest.id,
-					name: guest.name,
-					email: guest.email,
-					lastVisitedProjectId: guest.lastVisitedProjectId,
-					isGuest: true,
-				},
+				user: serializeUser(guest),
 			})
 		);
 	} catch (error) {
-		res.status(500).json({ error: "Server error" });
+		res.status(500).json({ error, message: "Server Error" });
 	}
 };
 
