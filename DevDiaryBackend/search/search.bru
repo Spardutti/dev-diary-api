@@ -1,0 +1,15 @@
+meta {
+  name: search
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{url}}/search/todo?status=false
+  body: none
+  auth: inherit
+}
+
+query {
+  status: false
+}

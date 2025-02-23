@@ -4,6 +4,7 @@ import todoRoutes from "./todo/todo.routes";
 import noteRoutes from "./note/note.routes";
 import healthRoutes from "./health/health.routes";
 import snippetRoutes from "./snippet/snippet.routes";
+import searchRoutes from "./search/search.routes";
 
 const routes = {
 	user: userRoutes,
@@ -12,6 +13,7 @@ const routes = {
 	note: noteRoutes,
 	health: healthRoutes,
 	snippet: snippetRoutes,
+	search: searchRoutes,
 };
 
 export default routes;
