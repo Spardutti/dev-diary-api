@@ -49,8 +49,6 @@ const login = async (req: Request, res: Response): Promise<any> => {
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production", // Ensures secure cookies in production
-			sameSite: "none",
-			domain: process.env.FRONTEND_URL,
 			maxAge: refreshTokenMaxAge,
 		});
 
