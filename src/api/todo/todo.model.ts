@@ -10,7 +10,7 @@ export enum TodoPriority {
 	High = 3,
 }
 
-class Todo extends Model<InferAttributes<Todo, { omit: "projectHashId" | "createdAt" | "updatedAt" | "hashId" }>, InferCreationAttributes<Todo, { omit: "id" | "projectHashId" | "createdAt" | "updatedAt" | "hashId" }>> {
+class Todo extends Model<InferAttributes<Todo, { omit: "projectHashId" | "hashId" }>, InferCreationAttributes<Todo, { omit: "id" | "projectHashId" | "createdAt" | "updatedAt" | "hashId" }>> {
 	declare id: string;
 	declare title: string;
 	declare description: string;
@@ -18,16 +18,11 @@ class Todo extends Model<InferAttributes<Todo, { omit: "projectHashId" | "create
 	declare status: boolean;
 	declare priority: number;
 	declare completedAt: Date | null;
+	declare createdAt: Date;
+	declare updatedAt: Date;
 
 	get projectHashId(): string {
 		return encodeHashId(this.projectId);
-	}
-
-	get createdAt(): string {
-		return this.createdAt;
-	}
-	get updatedAt(): string {
-		return this.updatedAt;
 	}
 
 	get hashId(): string {
@@ -68,6 +63,14 @@ Todo.init(
 		completedAt: {
 			type: DataTypes.DATE,
 			allowNull: true,
+		},
+		createdAt: {
+			type: DataTypes.DATE,
+			defaultValue: DataTypes.NOW,
+		},
+		updatedAt: {
+			type: DataTypes.DATE,
+			defaultValue: DataTypes.NOW,
 		},
 	},
 	{
