@@ -1,0 +1,35 @@
+meta {
+  name: update
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{url}}/summary/update/Jm6dQb9XnmSdLpJlbKLDClmzJYY
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "completedTodos": [{
+          "title": "TODAY COMPLETED",
+          "description": "potty break",
+          "status": true,
+          "priority": 1,
+          "createdAt": "2025-02-24T16:59:55.365Z",
+          "updatedAt": "2025-02-24T17:00:04.122Z",
+          "completedAt": "2025-02-24T17:00:04.121Z"
+        },
+                      {
+          "title": "TODAY Updated",
+          "description": "potty Updated",
+          "status": true,
+          "priority": 1,
+          "createdAt": "2025-02-24T16:59:55.365Z",
+          "updatedAt": "2025-02-24T17:00:04.122Z",
+          "completedAt": "2025-02-24T17:00:04.121Z"
+        }],
+    "noteContent": "This is the note"
+  }
+}

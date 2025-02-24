@@ -6,6 +6,7 @@ import Summary from "./summary.model";
 import { summarySerializer } from "./summary.serializer";
 import { decodeHashId } from "../helpers/hashid";
 import { Op } from "sequelize";
+import { parseQueryFilters } from "../helpers/parseQueryFilter";
 
 const create = async (req: Request, res: Response): Promise<any> => {
 	try {
@@ -47,7 +48,13 @@ const list = async (req: Request, res: Response): Promise<any> => {
 		if (!projectId) {
 			return res.status(400).json({ error: "projectId is required" });
 		}
-		const summaries = await Summary.findAll({ where: { projectId: decodeHashId(projectId as string) } });
+
+		const { filters, order } = parseQueryFilters(req.query);
+
+		const summaries = await Summary.findAll({
+			where: filters,
+			order,
+		});
 
 		if (summaries.length === 0) {
 			return res.status(200).json({ message: "No summary found" });
@@ -59,4 +66,80 @@ const list = async (req: Request, res: Response): Promise<any> => {
 	}
 };
 
-export const summaryController = { list, create };
+const remove = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const { id } = req.params;
+
+		const summary = await Summary.findByPk(decodeHashId(id));
+
+		if (!summary) {
+			return res.status(404).json({ message: "Summary not found" });
+		}
+
+		await summary.destroy();
+
+		res.json(createResponse(204));
+	} catch (error) {
+		res.status(500).json({ message: "Server error", error });
+	}
+};
+
+const show = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const { id } = req.params;
+
+		const summary = await Summary.findByPk(decodeHashId(id));
+
+		if (!summary) {
+			return res.status(404).json({ message: "Summary not found" });
+		}
+
+		res.json(createResponse(200, summarySerializer(summary)));
+	} catch (error) {
+		res.status(500).json({ message: "Server error", error });
+	}
+};
+
+const update = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const { id } = req.params;
+		const { noteContent, completedTodos, createdTodos } = req.body;
+
+		const summary = await Summary.findByPk(decodeHashId(id));
+
+		if (!summary) {
+			return res.status(404).json({ message: "Summary not found" });
+		}
+
+		await summary.update({ noteContent, completedTodos, createdTodos });
+
+		res.json(createResponse(200, summarySerializer(summary)));
+	} catch (error) {
+		res.status(500).json({ message: "Server error", error });
+	}
+};
+
+const exists = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const { projectId } = req.query;
+
+		if (!projectId) {
+			return res.status(400).json({ error: "projectId is required" });
+		}
+
+		const decodedProjectId = decodeHashId(projectId as string);
+		const startOfDay = dayjs().startOf("day").toDate();
+		const endOfDay = dayjs().endOf("day").toDate();
+
+		const todaySummary = await Summary.findOne({
+			where: { projectId: decodedProjectId, createdAt: { [Op.between]: [startOfDay, endOfDay] } },
+			attributes: ["id"],
+		});
+
+		return res.json({ exists: !!todaySummary });
+	} catch (error) {
+		res.status(500).json({ message: "Server error", error });
+	}
+};
+
+export const summaryController = { list, create, remove, show, update, exists };

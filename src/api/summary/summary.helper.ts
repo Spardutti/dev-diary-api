@@ -23,10 +23,11 @@ export const getSummaryForDate = async (date: Dayjs): Promise<{ note: Note | nul
 		},
 	});
 
-	const formattedTodos = {
-		created: todos.filter((todo) => todo.createdAt && dayjs(todo.createdAt).isSame(parsedDate, "day")),
-		completed: todos.filter((todo) => todo.completedAt && dayjs(todo.completedAt).isSame(parsedDate, "day")),
-	};
+	const completedTodos = todos.filter((todo) => todo.completedAt && dayjs(todo.completedAt).isSame(parsedDate, "day"));
 
-	return { note, createdTodos: formattedTodos.created, completedTodos: formattedTodos.completed };
+	const createdTodos = todos.filter(
+		(todo) => todo.createdAt && dayjs(todo.createdAt).isSame(parsedDate, "day") && !completedTodos.some((completed) => completed.id === todo.id) // Exclude if also completed
+	);
+
+	return { note, createdTodos, completedTodos };
 };

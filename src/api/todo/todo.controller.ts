@@ -3,6 +3,7 @@ import Todo from "./todo.model";
 import { Request, Response } from "express";
 import { todoSerializer } from "./todo.serializer";
 import { decodeHashId } from "../helpers/hashid";
+import { parseQueryFilters } from "../helpers/parseQueryFilter";
 
 const create = async (req: Request, res: Response): Promise<any> => {
 	try {
@@ -18,25 +19,10 @@ const create = async (req: Request, res: Response): Promise<any> => {
 
 const list = async (req: Request, res: Response): Promise<any> => {
 	try {
-		const { orderBy, orderDirection, ...filters } = req.query;
-
-		const order: [string, string][] = [];
-
-		if (orderBy) {
-			// Split fields and directions
-			const orderByFields = typeof orderBy === "string" ? orderBy.split(",") : [];
-			const orderDirections = typeof orderDirection === "string" ? orderDirection.split(",") : [];
-
-			orderByFields.forEach((field, index) => {
-				const direction = orderDirections[index]?.toLowerCase() === "asc" ? "ASC" : "DESC";
-				order.push([field.trim(), direction]);
-			});
-		}
-
-		const projectId = filters?.projectId ? decodeHashId(filters.projectId as string) : undefined;
+		const { filters, order } = parseQueryFilters(req.query);
 
 		const todos = await Todo.findAll({
-			where: { ...filters, projectId },
+			where: filters,
 			order,
 		});
 
