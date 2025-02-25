@@ -6,7 +6,6 @@ import passport from "./config/passportConfig";
 import cors from "cors";
 import { setupAssociations } from "./api/associations";
 import cookieParser from "cookie-parser";
-import { guestCleaner } from "./cron/guestCleaner";
 import { NotesCleaner } from "./cron/notesCleaner";
 
 const app = express();
@@ -35,8 +34,7 @@ const startServer = async () => {
 
 		app.listen(PORT, () => {
 			console.log(`🚀 Server running on port ${PORT}`);
-			guestCleaner.start();
-			NotesCleaner.start()
+			NotesCleaner.start();
 		});
 	} catch (error) {
 		console.error("❌ Database connection failed:", error);

@@ -5,6 +5,7 @@ import noteRoutes from "./note/note.routes";
 import healthRoutes from "./health/health.routes";
 import snippetRoutes from "./snippet/snippet.routes";
 import searchRoutes from "./search/search.routes";
+import summaryRoutes from "./summary/summary.routes";
 
 const routes = {
 	user: userRoutes,
@@ -14,6 +15,7 @@ const routes = {
 	health: healthRoutes,
 	snippet: snippetRoutes,
 	search: searchRoutes,
+	summary: summaryRoutes,
 };
 
 export default routes;

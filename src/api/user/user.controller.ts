@@ -78,7 +78,7 @@ const refresh = async (req: Request, res: Response): Promise<any> => {
 		const { refreshToken } = req.cookies;
 
 		if (!refreshToken) {
-			return res.status(401).json({ error: "Unauthorized" });
+			return res.status(500).json({ error: "Unauthorized" });
 		}
 
 		try {
@@ -95,7 +95,7 @@ const refresh = async (req: Request, res: Response): Promise<any> => {
 			return res.json(createResponse(200, { token }));
 		} catch (error) {
 			// Client axios wont catch 401 as error so we throw 404.
-			res.status(404).json({ error: "Unauthorized" });
+			res.status(500).json({ error: "Unauthorized" });
 		}
 	} catch (error) {
 		return res.status(500).json({ error: "Server error" });
