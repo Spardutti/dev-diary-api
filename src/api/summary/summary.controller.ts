@@ -31,7 +31,7 @@ const create = async (req: Request, res: Response): Promise<any> => {
 		if (existingSummary) {
 			return res.status(409).json({ message: "Summary for this date already exists." });
 		}
-		const { note, completedTodos, createdTodos } = await getSummaryForDate(formattedDate);
+		const { note, completedTodos, createdTodos } = await getSummaryForDate(formattedDate, projectId);
 
 		const summary = await Summary.create({ noteContent: note?.content, completedTodos, createdTodos, projectId: decodeHashId(projectId), createdAt: formattedDate.toDate() });
 
