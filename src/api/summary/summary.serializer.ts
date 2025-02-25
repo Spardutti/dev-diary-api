@@ -5,7 +5,6 @@ import Summary from "./summary.model";
 export const summarySerializer = (input: Summary | Summary[]): Partial<Summary> | Partial<Summary>[] => {
 	const serialize = (summary: Summary): Partial<Summary> => ({
 		id: summary.hashId,
-		noteContent: summary.noteContent,
 		completedTodos: todoSerializer(summary.completedTodos) as Todo[],
 		createdTodos: todoSerializer(summary.createdTodos) as Todo[],
 		projectId: summary.projectHashId,

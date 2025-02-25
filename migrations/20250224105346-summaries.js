@@ -9,10 +9,7 @@ module.exports = {
 				primaryKey: true,
 				defaultValue: Sequelize.UUIDV4,
 			},
-			noteContent: {
-				type: Sequelize.TEXT,
-				allowNull: true,
-			},
+
 			createdAt: {
 				type: Sequelize.DATE,
 				allowNull: false,

@@ -8,7 +8,7 @@ import { decodeHashId } from "../helpers/hashid";
 import { Op } from "sequelize";
 import { parseQueryFilters } from "../helpers/parseQueryFilter";
 
-const create = async (req: Request, res: Response): Promise<any> => {
+const createOrUpdate = async (req: Request, res: Response): Promise<any> => {
 	try {
 		const { projectId, date } = req.body;
 
@@ -24,18 +24,31 @@ const create = async (req: Request, res: Response): Promise<any> => {
 		const startOfDay = formattedDate.startOf("day").toDate();
 		const endOfDay = formattedDate.endOf("day").toDate();
 
-		const existingSummary = await Summary.findOne({
-			where: { projectId: decodeHashId(projectId), createdAt: { [Op.between]: [startOfDay, endOfDay] } },
+		let summary = await Summary.findOne({
+			where: {
+				projectId: decodeHashId(projectId),
+				createdAt: { [Op.between]: [startOfDay, endOfDay] },
+			},
 		});
 
-		if (existingSummary) {
-			return res.status(409).json({ message: "Summary for this date already exists." });
+		const { completedTodos, createdTodos } = await getSummaryForDate(formattedDate, projectId);
+
+		if (completedTodos.length === 0 && createdTodos.length === 0) {
+			return res.json({ message: "No todos found for the specific date" });
 		}
-		const { note, completedTodos, createdTodos } = await getSummaryForDate(formattedDate, projectId);
 
-		const summary = await Summary.create({ noteContent: note?.content, completedTodos, createdTodos, projectId: decodeHashId(projectId), createdAt: formattedDate.toDate() });
+		if (summary) {
+			await summary.update({ completedTodos, createdTodos });
+		} else {
+			summary = await Summary.create({
+				completedTodos,
+				createdTodos,
+				projectId: decodeHashId(projectId),
+				createdAt: formattedDate.toDate(),
+			});
+		}
 
-		return res.json(createResponse(201, summarySerializer(summary)));
+		return res.json(createResponse(200, summarySerializer(summary)));
 	} catch (error) {
 		res.status(500).json({ message: "Server error", error });
 	}
@@ -103,7 +116,7 @@ const show = async (req: Request, res: Response): Promise<any> => {
 const update = async (req: Request, res: Response): Promise<any> => {
 	try {
 		const { id } = req.params;
-		const { noteContent, completedTodos, createdTodos } = req.body;
+		const { completedTodos, createdTodos } = req.body;
 
 		const summary = await Summary.findByPk(decodeHashId(id));
 
@@ -111,7 +124,7 @@ const update = async (req: Request, res: Response): Promise<any> => {
 			return res.status(404).json({ message: "Summary not found" });
 		}
 
-		await summary.update({ noteContent, completedTodos, createdTodos });
+		await summary.update({ completedTodos, createdTodos });
 
 		res.json(createResponse(200, summarySerializer(summary)));
 	} catch (error) {
@@ -142,4 +155,4 @@ const exists = async (req: Request, res: Response): Promise<any> => {
 	}
 };
 
-export const summaryController = { list, create, remove, show, update, exists };
+export const summaryController = { list, createOrUpdate, remove, show, update, exists };

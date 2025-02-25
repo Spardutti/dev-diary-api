@@ -7,7 +7,7 @@ import { createSummarySchema } from "./summary.schema";
 const routes = Router();
 
 routes.get("/list", authMiddleware, summaryController.list);
-routes.post("/create", validateRequestBody(createSummarySchema), authMiddleware, summaryController.create);
+routes.post("/upsert", validateRequestBody(createSummarySchema), authMiddleware, summaryController.createOrUpdate);
 routes.delete("/delete/:id", authMiddleware, summaryController.remove);
 routes.get("/show/:id", authMiddleware, summaryController.show);
 routes.put("/update/:id", authMiddleware, summaryController.update);

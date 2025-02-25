@@ -7,7 +7,6 @@ class Summary extends Model<InferAttributes<Summary, { omit: "projectHashId" | "
 	declare id: string;
 	declare createdAt: Date;
 	declare updatedAt: Date;
-	declare noteContent: string | null;
 	declare projectId: string;
 	declare createdTodos: Todo[];
 	declare completedTodos: Todo[];
@@ -37,10 +36,7 @@ Summary.init(
 			type: DataTypes.DATE,
 			defaultValue: DataTypes.NOW,
 		},
-		noteContent: {
-			type: DataTypes.TEXT,
-			allowNull: true,
-		},
+
 		createdTodos: {
 			type: DataTypes.JSONB,
 			allowNull: true,

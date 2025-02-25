@@ -1,20 +1,12 @@
 import dayjs, { Dayjs } from "dayjs";
-import Note from "../note/note.model";
 import Todo from "../todo/todo.model";
 import { Op } from "sequelize";
 import { decodeHashId } from "../helpers/hashid";
 
-export const getSummaryForDate = async (date: Dayjs, projectId: string): Promise<{ note: Note | null; createdTodos: Todo[]; completedTodos: Todo[] }> => {
+export const getSummaryForDate = async (date: Dayjs, projectId: string): Promise<{ createdTodos: Todo[]; completedTodos: Todo[] }> => {
 	const startOfDay = date.startOf("day").toDate();
 	const endOfDay = date.endOf("day").toDate();
 	const parsedDate = dayjs(date);
-
-	const note = await Note.findOne({
-		where: {
-			createdAt: { [Op.between]: [startOfDay, endOfDay] },
-			projectId: decodeHashId(projectId),
-		},
-	});
 
 	const todos = await Todo.findAll({
 		where: {
@@ -22,6 +14,7 @@ export const getSummaryForDate = async (date: Dayjs, projectId: string): Promise
 				completedAt: { [Op.between]: [startOfDay, endOfDay] },
 				createdAt: { [Op.between]: [startOfDay, endOfDay] },
 			},
+			projectId: decodeHashId(projectId),
 		},
 	});
 
@@ -31,5 +24,5 @@ export const getSummaryForDate = async (date: Dayjs, projectId: string): Promise
 		(todo) => todo.createdAt && dayjs(todo.createdAt).isSame(parsedDate, "day") && !completedTodos.some((completed) => completed.id === todo.id) // Exclude if also completed
 	);
 
-	return { note, createdTodos, completedTodos };
+	return { createdTodos, completedTodos };
 };
