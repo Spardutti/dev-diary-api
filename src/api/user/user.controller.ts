@@ -55,6 +55,8 @@ const login = async (req: Request, res: Response): Promise<any> => {
 
 		await findOrCreateTodayNote(user);
 
+		await user.update({ lastLoggedIn: new Date() });
+
 		return res.json(createResponse(200, { token, user: serializeUser(user) }));
 	} catch (error) {
 		return res.status(500).json({ message: "Server error", error });
@@ -63,11 +65,18 @@ const login = async (req: Request, res: Response): Promise<any> => {
 
 const me = async (req: Request, res: Response): Promise<any> => {
 	try {
-		if (req.user) {
-			return res.json(createResponse(200, serializeUser(req.user as User)));
+		if (!req.user) {
+			return res.status(401).json({ error: "Unauthorized" });
 		}
 
-		return res.status(401).json({ error: "Unauthorized" });
+		const user = req.user as User;
+
+		const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+		if (!user.lastLoggedIn || user.lastLoggedIn < oneDayAgo) {
+			await user.update({ lastLoggedIn: new Date() });
+		}
+
+		return res.json(createResponse(200, serializeUser(user)));
 	} catch (error) {
 		return res.status(500).json({ error: "Server error" });
 	}

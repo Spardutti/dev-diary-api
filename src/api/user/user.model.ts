@@ -3,7 +3,7 @@ import sequelize from "../../config/database";
 import { v4 as uuidv4 } from "uuid";
 import { encodeHashId } from "../helpers/hashid";
 
-class User extends Model<InferAttributes<User, { omit: "hashId" | "lastVisitedProjectHash" }>, InferCreationAttributes<User, { omit: "id" | "lastVisitedProjectId" | "hashId" | "lastVisitedProjectHash" }>> {
+class User extends Model<InferAttributes<User, { omit: "hashId" | "lastVisitedProjectHash" }>, InferCreationAttributes<User, { omit: "id" | "lastVisitedProjectId" | "hashId" | "lastVisitedProjectHash" | "lastLoggedIn" }>> {
 	declare id: string;
 	declare name: string;
 	declare email: string;
@@ -11,6 +11,7 @@ class User extends Model<InferAttributes<User, { omit: "hashId" | "lastVisitedPr
 	declare lastVisitedProjectId: string;
 	declare isGuest: boolean;
 	declare expiresAt: Date | null;
+	declare lastLoggedIn: Date;
 
 	get hashId(): string {
 		return encodeHashId(this.id);
@@ -51,6 +52,12 @@ User.init(
 		isGuest: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false,
+		},
+
+		lastLoggedIn: {
+			type: DataTypes.DATE,
+			defaultValue: null,
+			allowNull: true,
 		},
 
 		expiresAt: {

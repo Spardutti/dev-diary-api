@@ -34,7 +34,7 @@ const createOrUpdate = async (req: Request, res: Response): Promise<any> => {
 		const { completedTodos, createdTodos } = await getSummaryForDate(formattedDate, projectId);
 
 		if (completedTodos.length === 0 && createdTodos.length === 0) {
-			return res.json({ message: "No todos found for the specific date" });
+			return res.json({ message: "No tasks were created or completed on this date." });
 		}
 
 		if (summary) {
