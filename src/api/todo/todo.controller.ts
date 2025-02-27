@@ -3,7 +3,7 @@ import Todo from "./todo.model";
 import { Request, Response } from "express";
 import { todoSerializer } from "./todo.serializer";
 import { decodeHashId } from "../helpers/hashid";
-import { parseQueryFilters } from "../helpers/parseQueryFilter";
+import { parseQueryParams } from "../helpers/parseQueryParams";
 
 const create = async (req: Request, res: Response): Promise<any> => {
 	try {
@@ -19,14 +19,18 @@ const create = async (req: Request, res: Response): Promise<any> => {
 
 const list = async (req: Request, res: Response): Promise<any> => {
 	try {
-		const { filters, order } = parseQueryFilters(req.query);
+		const { filters, order } = parseQueryParams(req.query);
+
+		const { pagination } = req;
 
 		const todos = await Todo.findAll({
 			where: filters,
 			order,
+			limit: pagination?.limit,
+			offset: pagination?.skip,
 		});
 
-		return res.status(200).json(createResponse(200, todoSerializer(todos)));
+		return res.status(200).json(createResponse(200, todoSerializer(todos), pagination));
 	} catch (error) {
 		return res.status(500).json({ error: "Failed to filter todos" });
 	}

@@ -6,7 +6,7 @@ import Summary from "./summary.model";
 import { summarySerializer } from "./summary.serializer";
 import { decodeHashId } from "../helpers/hashid";
 import { Op } from "sequelize";
-import { parseQueryFilters } from "../helpers/parseQueryFilter";
+import { parseQueryParams } from "../helpers/parseQueryParams";
 
 const createOrUpdate = async (req: Request, res: Response): Promise<any> => {
 	try {
@@ -62,7 +62,7 @@ const list = async (req: Request, res: Response): Promise<any> => {
 			return res.status(400).json({ error: "projectId is required" });
 		}
 
-		const { filters, order } = parseQueryFilters(req.query);
+		const { filters, order } = parseQueryParams(req.query);
 
 		const summaries = await Summary.findAll({
 			where: filters,
