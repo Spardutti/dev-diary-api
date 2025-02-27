@@ -1,4 +1,6 @@
+import { Op } from "sequelize";
 import { decodeHashId } from "./hashid";
+import dayjs from "dayjs";
 
 const NON_FILTER_PARAMS = ["page", "limit", "orderBy", "orderDirection"];
 
@@ -52,12 +54,20 @@ export const parseQueryParams = (query: Record<string, any>): ParsedQuery => {
 		order.push(["createdAt", "DESC"]);
 	}
 
-	// Extract filters (everything that's not pagination or ordering)
 	const filters: Record<string, any> = {};
 
 	Object.keys(query).forEach((key) => {
 		if (!NON_FILTER_PARAMS.includes(key)) {
-			filters[key] = query[key];
+			if (key === "title" && typeof query[key] === "string") {
+				filters[key] = { [Op.iLike]: `%${query[key]}%` };
+			} else if (key === "completedAt" || key === "createdAt" || key === "updatedAt") {
+				const date = dayjs(query[key]).format("YYYY-MM-DD");
+				filters[key] = {
+					[Op.between]: [dayjs(date).startOf("day").toDate(), dayjs(date).endOf("day").toDate()],
+				};
+			} else {
+				filters[key] = query[key];
+			}
 		}
 	});
 
