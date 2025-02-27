@@ -5,13 +5,14 @@ meta {
 }
 
 get {
-  url: {{url}}/todo/list?projectId=zaR0wLpOZnHloBoyQD4NCY4v0x0l&orderBy=priority&orderDirection=asc
+  url: {{url}}/todo/list?projectId=zaR0wLpOZnHloBoyQD4NCY4v0x0l&orderBy=priority,createdAt&status=false&limit=1000
   body: none
   auth: inherit
 }
 
 query {
   projectId: zaR0wLpOZnHloBoyQD4NCY4v0x0l
-  orderBy: priority
-  orderDirection: asc
+  orderBy: priority,createdAt
+  status: false
+  limit: 1000
 }
