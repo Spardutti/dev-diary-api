@@ -19,26 +19,26 @@ app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(cookieParser());
 
 Object.entries(routes).forEach(([path, route]) => {
-	app.use(`${apiUrl}/${path}`, route);
+    app.use(`${apiUrl}/${path}`, route);
 });
 
 setupAssociations();
 
 const startServer = async () => {
-	try {
-		await sequelize.authenticate();
-		console.log("✅ Database connected successfully.");
+    try {
+        await sequelize.authenticate();
+        console.log("✅ Database connected successfully.");
 
-		await sequelize.getQueryInterface().showAllTables();
-		console.log("✅ Models synced with database.");
+        await sequelize.getQueryInterface().showAllTables();
+        console.log("✅ Models synced with database.");
 
-		app.listen(PORT, () => {
-			console.log(`🚀 Server running on port ${PORT}`);
-			NotesCleaner.start();
-		});
-	} catch (error) {
-		console.error("❌ Database connection failed:", error);
-	}
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+            NotesCleaner.start();
+        });
+    } catch (error) {
+        console.error("❌ Database connection failed:", error);
+    }
 };
 
 startServer();
