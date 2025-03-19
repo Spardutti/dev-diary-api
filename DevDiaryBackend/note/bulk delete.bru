@@ -1,0 +1,16 @@
+meta {
+  name: bulk delete
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{url}}/note/bulk-delete?from=2025-02-19&to=2025-02-19
+  body: none
+  auth: inherit
+}
+
+query {
+  from: 2025-02-19
+  to: 2025-02-19
+}

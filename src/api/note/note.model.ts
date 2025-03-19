@@ -37,6 +37,7 @@ Note.init(
 		projectId: {
 			type: DataTypes.UUID,
 			allowNull: false,
+			onDelete: "CASCADE",
 		},
 
 		createdAt: {

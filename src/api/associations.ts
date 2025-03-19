@@ -5,14 +5,14 @@ import Note from "./note/note.model";
 
 export const setupAssociations = () => {
 	// User - Project
-	User.hasMany(Project, { foreignKey: "userId", as: "projects" });
-	Project.belongsTo(User, { foreignKey: "userId", as: "user" });
+	User.hasMany(Project, { foreignKey: "userId", as: "projects", onDelete: "CASCADE" });
+	Project.belongsTo(User, { foreignKey: "userId", as: "user", onDelete: "CASCADE" });
 
 	// Project - Todo
-	Project.hasMany(Todo, { foreignKey: "projectId", as: "todos" });
-	Todo.belongsTo(Project, { foreignKey: "projectId", as: "project" });
+	Project.hasMany(Todo, { foreignKey: "projectId", as: "todos", onDelete: "CASCADE" });
+	Todo.belongsTo(Project, { foreignKey: "projectId", as: "project", onDelete: "CASCADE" });
 
 	// Project - Note
-	Project.hasMany(Note, { foreignKey: "projectId", as: "notes" });
-	Note.belongsTo(Project, { foreignKey: "projectId", as: "project" });
+	Project.hasMany(Note, { foreignKey: "projectId", as: "notes", onDelete: "CASCADE" });
+	Note.belongsTo(Project, { foreignKey: "projectId", as: "project", onDelete: "CASCADE" });
 };

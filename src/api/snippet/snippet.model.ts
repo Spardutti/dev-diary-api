@@ -44,6 +44,11 @@ Snippet.init(
 		userId: {
 			type: DataTypes.UUID,
 			allowNull: false,
+			onDelete: "CASCADE",
+			references: {
+				model: "users",
+				key: "id",
+			},
 		},
 		createdAt: {
 			type: DataTypes.DATE,

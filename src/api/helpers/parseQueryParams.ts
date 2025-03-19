@@ -2,7 +2,7 @@ import { Op } from "sequelize";
 import { decodeHashId } from "./hashid";
 import dayjs from "dayjs";
 
-const NON_FILTER_PARAMS = ["page", "limit", "orderBy", "orderDirection"];
+const NON_FILTER_PARAMS = ["page", "limit", "orderBy", "orderDirection", "from", "to"];
 
 interface Pagination {
 	totalItems: number;
@@ -45,6 +45,8 @@ export const parseQueryParams = (query: Record<string, any>): ParsedQuery => {
 		const orderByFields = typeof orderBy === "string" ? orderBy.split(",") : [];
 		const orderDirections = typeof orderDirection === "string" ? orderDirection.split(",") : [];
 
+		//createadAt,completed&orderDirectioN=asc,desc
+
 		orderByFields.forEach((field, index) => {
 			const direction = orderDirections[index]?.toLowerCase() === "asc" ? "ASC" : "DESC";
 			order.push([field.trim(), direction]);
@@ -55,6 +57,15 @@ export const parseQueryParams = (query: Record<string, any>): ParsedQuery => {
 	}
 
 	const filters: Record<string, any> = {};
+
+	if (query.from && query.to) {
+		const fromDate = dayjs(query.from).startOf("day").toDate();
+		const toDate = dayjs(query.to).endOf("day").toDate();
+
+		filters.createdAt = {
+			[Op.between]: [fromDate, toDate],
+		};
+	}
 
 	Object.keys(query).forEach((key) => {
 		if (!NON_FILTER_PARAMS.includes(key)) {

@@ -48,6 +48,11 @@ Summary.init(
 		projectId: {
 			type: DataTypes.UUID,
 			allowNull: false,
+			onDelete: "CASCADE",
+			references: {
+				model: "projects",
+				key: "id",
+			},
 		},
 	},
 	{
