@@ -7,7 +7,7 @@ import path from "path";
 import z from "zod";
 
 const APP_ID = process.env.GITHUB_CLIENT_APP_ID!;
-const privateKeyPath = process.env.NODE_ENV !== "development" ? "/etc/secrets/github-private-key.pem" : path.join(process.cwd(), "github-private-key.pem");
+const privateKeyPath = path.join(process.cwd(), "github-private-key.pem");
 const privateKey = readFileSync(privateKeyPath, "utf8");
 
 console.log("Private Key Loaded Successfully:", privateKey.startsWith("-----BEGIN RSA PRIVATE KEY-----"));
