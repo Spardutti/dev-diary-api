@@ -1,3 +1,4 @@
+import { ICommit } from "./../github/github.types";
 import { Request, Response } from "express";
 import { getSummaryForDate } from "./summary.helper";
 import dayjs from "dayjs";
@@ -7,6 +8,7 @@ import { summarySerializer } from "./summary.serializer";
 import { decodeHashId } from "../helpers/hashid";
 import { Op } from "sequelize";
 import { parseQueryParams } from "../helpers/parseQueryParams";
+import { getRepoCommits } from "../github/github.helper";
 
 const createOrUpdate = async (req: Request, res: Response): Promise<any> => {
 	try {
@@ -31,10 +33,12 @@ const createOrUpdate = async (req: Request, res: Response): Promise<any> => {
 			},
 		});
 
-		const { completedTodos, createdTodos } = await getSummaryForDate(formattedDate, projectId);
+		const commits = await getRepoCommits(date, projectId);
+
+		const { completedTodos, createdTodos } = await getSummaryForDate(formattedDate, projectId, Array.isArray(commits) ? commits : []);
 
 		if (completedTodos.length === 0 && createdTodos.length === 0) {
-			return res.json({ message: "No tasks were created or completed on this date." });
+			return res.json({ message: "No todos were created or completed on this date." });
 		}
 
 		if (summary) {
