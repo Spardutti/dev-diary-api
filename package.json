@@ -5,6 +5,7 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "nodemon -L --ext ts --exec 'npx ts-node src/server.ts'",
+    "devBeaver": "nodemon src/server.ts",
     "prepare": "husky",
     "build": "tsc",
     "start": "node dist/server.js"
