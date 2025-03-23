@@ -6,6 +6,7 @@ import healthRoutes from "./health/health.routes";
 import snippetRoutes from "./snippet/snippet.routes";
 import searchRoutes from "./search/search.routes";
 import summaryRoutes from "./summary/summary.routes";
+import githubRoutes from "./github/github.routes";
 
 const routes = {
 	user: userRoutes,
@@ -16,6 +17,7 @@ const routes = {
 	snippet: snippetRoutes,
 	search: searchRoutes,
 	summary: summaryRoutes,
+	github: githubRoutes,
 };
 
 export default routes;
