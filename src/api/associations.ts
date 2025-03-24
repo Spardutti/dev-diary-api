@@ -2,6 +2,7 @@ import User from "./user/user.model";
 import Project from "./project/project.model";
 import Todo from "./todo/todo.model";
 import Note from "./note/note.model";
+import GithubConfig from "./github/github.model";
 
 export const setupAssociations = () => {
 	// User - Project
@@ -15,4 +16,8 @@ export const setupAssociations = () => {
 	// Project - Note
 	Project.hasMany(Note, { foreignKey: "projectId", as: "notes", onDelete: "CASCADE" });
 	Note.belongsTo(Project, { foreignKey: "projectId", as: "project", onDelete: "CASCADE" });
+
+	// Project - Github-Config
+	Project.hasOne(GithubConfig, { foreignKey: "projectId", as: "githubConfig", onDelete: "CASCADE" });
+	GithubConfig.belongsTo(Project, { foreignKey: "projectId", as: "project", onDelete: "CASCADE" });
 };
