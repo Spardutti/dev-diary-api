@@ -23,6 +23,62 @@ const create = async (req: Request, res: Response): Promise<any> => {
 	}
 };
 
+const list = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const configs = await GitHubConfig.findAll();
+
+		return res.json(createResponse(200, githubSerializer(configs)));
+	} catch (error) {
+		return res.json(createResponse(400, { message: "Error listing GitHub configs", error }));
+	}
+};
+
+const update = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const { id } = req.params;
+		const { installationId, repo, owner, author, projectId } = req.body;
+
+		const config = await GitHubConfig.findOne({ where: { id: decodeHashId(id) } });
+
+		if (!config) {
+			return res.json(createResponse(400, { message: "GitHub config not found" }));
+		}
+
+		await config.update({
+			installationId,
+			repo,
+			owner,
+			author,
+			projectId: decodeHashId(projectId),
+		});
+
+		return res.json(createResponse(200, githubSerializer(config)));
+	} catch (error) {
+		return res.json(createResponse(400, { message: "Error updating GitHub config", error }));
+	}
+};
+
+const remove = async (req: Request, res: Response): Promise<any> => {
+	try {
+		const { id } = req.params;
+
+		const config = await GitHubConfig.findOne({ where: { id: decodeHashId(id) } });
+
+		if (!config) {
+			return res.json(createResponse(400, { message: "GitHub config not found" }));
+		}
+
+		await config.destroy();
+
+		return res.json(createResponse(204));
+	} catch (error) {
+		return res.json(createResponse(400, { message: "Error deleting GitHub config", error }));
+	}
+};
+
 export const githubController = {
 	create,
+	remove,
+	list,
+	update,
 };

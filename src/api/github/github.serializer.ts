@@ -1,8 +1,10 @@
 import GitHubConfig from "./github.model";
 import { InferAttributes } from "sequelize";
 
-export const githubSerializer = (input: GitHubConfig): Partial<GitHubConfig> => {
-	const serialize = (github: GitHubConfig): InferAttributes<GitHubConfig, { omit: "hashId" | "projectHashId" | "installationHashId" }> => ({
+type SerializedGitHubConfig = InferAttributes<GitHubConfig, { omit: "hashId" | "projectHashId" | "installationHashId" }>;
+
+export const githubSerializer = (input: GitHubConfig | GitHubConfig[]): SerializedGitHubConfig | SerializedGitHubConfig[] => {
+	const serialize = (github: GitHubConfig): SerializedGitHubConfig => ({
 		id: github.hashId,
 		projectId: github.projectHashId,
 		owner: github.owner,
@@ -13,5 +15,5 @@ export const githubSerializer = (input: GitHubConfig): Partial<GitHubConfig> => 
 		updatedAt: github.updatedAt,
 	});
 
-	return serialize(input);
+	return Array.isArray(input) ? input.map(serialize) : serialize(input);
 };
