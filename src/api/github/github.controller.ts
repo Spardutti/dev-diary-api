@@ -24,8 +24,9 @@ const create = async (req: Request, res: Response): Promise<any> => {
 };
 
 const list = async (req: Request, res: Response): Promise<any> => {
+	const { projectId } = req.query;
 	try {
-		const configs = await GitHubConfig.findAll();
+		const configs = await GitHubConfig.findAll({ where: { projectId: decodeHashId(projectId as string) } });
 
 		return res.json(createResponse(200, githubSerializer(configs)));
 	} catch (error) {
