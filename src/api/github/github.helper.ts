@@ -40,18 +40,22 @@ const generateGitHubAppToken = async ({ installationId }: { installationId: stri
 };
 
 const getOpenPrs = async ({ owner, repo, token }: { owner: string; repo: string; token: string }): Promise<{ openPrsNumber: number[] }> => {
-	const response = await axios.get<{ number: number }[]>(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
-		headers: {
-			Authorization: `Bearer ${token}`,
-			Accept: "application/vnd.github.v3+json",
-		},
-		params: {
-			state: "open",
-			per_page: 10,
-		},
-	});
+	try {
+		const response = await axios.get<{ number: number }[]>(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				Accept: "application/vnd.github.v3+json",
+			},
+			params: {
+				state: "open",
+				per_page: 10,
+			},
+		});
 
-	return { openPrsNumber: response.data.map((pr) => pr.number) };
+		return { openPrsNumber: response.data.map((pr) => pr.number) };
+	} catch (error) {
+		return { openPrsNumber: [] };
+	}
 };
 
 const getFirstPrWhereUserHasCommits = async ({ openPrsNumber, owner, repo, author, token }: { openPrsNumber: number[]; owner: string; repo: string; author: string; token: string }) => {
@@ -91,41 +95,44 @@ export const getRepoCommits = async (date: string, projectId: string): Promise<I
 		}
 
 		const { installationId, owner, repo, author } = config;
+
 		const token = await generateGitHubAppToken({ installationId });
-
-		const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/commits?author=${author}`, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-				Accept: "application/vnd.github.v3+json",
-			},
-			params: { since: `${formattedDate}T00:00:00Z`, until: `${formattedDate}T23:59:59Z` },
-		});
-
-		const { openPrsNumber } = await getOpenPrs({ owner, repo, token });
-
-		const { userPRNumber } = await getFirstPrWhereUserHasCommits({ owner, repo, author, token, openPrsNumber });
-
-		let prCommits = [];
-
-		if (userPRNumber) {
-			const commitsResponse = await axios.get(`https://api.github.com/repos/${owner}/${repo}/pulls/${userPRNumber}/commits`, {
+		try {
+			const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/commits?author=${author}`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 					Accept: "application/vnd.github.v3+json",
 				},
+				params: { since: `${formattedDate}T00:00:00Z`, until: `${formattedDate}T23:59:59Z` },
 			});
+			const { openPrsNumber } = await getOpenPrs({ owner, repo, token });
 
-			prCommits = commitsResponse.data;
+			const { userPRNumber } = await getFirstPrWhereUserHasCommits({ owner, repo, author, token, openPrsNumber });
+
+			let prCommits = [];
+
+			if (userPRNumber) {
+				const commitsResponse = await axios.get(`https://api.github.com/repos/${owner}/${repo}/pulls/${userPRNumber}/commits`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+						Accept: "application/vnd.github.v3+json",
+					},
+				});
+
+				prCommits = commitsResponse.data;
+			}
+
+			const commits: ICommit[] = [...response.data, ...prCommits].map((commit: { sha: string; commit: { message: string; author: { date: string; name: string } } }) => ({
+				sha: commit.sha,
+				message: commit.commit.message,
+				date: commit.commit.author.date,
+				author: commit.commit.author.name,
+			}));
+
+			return commits;
+		} catch (error) {
+			return { error: "error fetching commits" };
 		}
-
-		const commits: ICommit[] = [...response.data, ...prCommits].map((commit: { sha: string; commit: { message: string; author: { date: string; name: string } } }) => ({
-			sha: commit.sha,
-			message: commit.commit.message,
-			date: commit.commit.author.date,
-			author: commit.commit.author.name,
-		}));
-
-		return commits;
 	} catch (error) {
 		return { error: error instanceof Error ? error.message : "An unknown error occurred" };
 	}
